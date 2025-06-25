@@ -19,7 +19,9 @@
 # misc
 .DS_Store
 *.pem
-*.sh
+
+# backup scripts should be tracked, exclude other shell scripts
+# *.sh
 
 # debug
 npm-debug.log*
