@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Building2, TrendingUp, Calendar, Activity } from "lucide-react";
 
@@ -28,7 +28,7 @@ interface StockSignal {
   symbol: string;
   signal_type: string;
   category: "intraday" | "daily";
-  direction: "bullish" | "bearish" | "neutral";
+  direction: "long" | "short";
   price: number;
   confidence: number;
   status: string;
@@ -83,9 +83,7 @@ async function getStockSignals(symbol: string): Promise<StockSignal[]> {
 function convertToSignalFormat(stockSignals: StockSignal[], stockInfo?: StockInfo): Signal[] {
   return stockSignals.map(signal => ({
     ...signal,
-    direction: signal.direction === 'bullish' ? 'BULLISH' as const : 
-               signal.direction === 'bearish' ? 'BEARISH' as const : 
-               'BULLISH' as const, // 默认为BULLISH，因为Signal类型不支持neutral
+    direction: signal.direction, // direction已经是"long" | "short"，直接使用
     meta_data: signal.meta_data || {},
     stock: {
       name: stockInfo?.name || "未知股票",
@@ -137,7 +135,7 @@ function StockInfoCard({ stock }: { stock: StockInfo }) {
 function SignalStatsCard({ signals }: { signals: StockSignal[] }) {
   const totalSignals = signals.length;
   const activeSignals = signals.filter(s => s.status === 'active').length;
-  const bullishSignals = signals.filter(s => s.direction === 'bullish').length;
+  const longSignals = signals.filter(s => s.direction === 'long').length;
   const intradaySignals = signals.filter(s => s.category === 'intraday').length;
 
   return (
@@ -164,11 +162,11 @@ function SignalStatsCard({ signals }: { signals: StockSignal[] }) {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">看涨信号</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">做多信号</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-blue-600">{bullishSignals}</div>
-          <div className="text-xs text-muted-foreground">看涨方向</div>
+          <div className="text-2xl font-bold text-blue-600">{longSignals}</div>
+          <div className="text-xs text-muted-foreground">做多方向</div>
         </CardContent>
       </Card>
 
