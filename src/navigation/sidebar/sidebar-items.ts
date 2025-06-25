@@ -1,22 +1,22 @@
 import {
-  Home,
-  ChartPie,
-  Grid2X2,
-  ChartLine,
-  ShoppingBag,
-  BookA,
-  Forklift,
-  Mail,
-  MessageSquare,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  BarChart3,
+  LineChart,
+  Target,
+  Shield,
+  Zap,
+  Clock,
   Calendar,
-  Kanban,
-  ReceiptText,
-  Users,
-  Lock,
   Fingerprint,
-  SquareArrowUpRight,
+  Square,
+  Minus,
+  ArrowUp,
   type LucideIcon,
 } from "lucide-react";
+
+import { getSignalsByCategory, getUrlFromDbFieldName, type SignalConfig } from "@/config/signals-config";
 
 export interface NavSubItem {
   title: string;
@@ -41,93 +41,110 @@ export interface NavGroup {
   items: NavMainItem[];
 }
 
+// 图标映射
+const iconMap: Record<string, LucideIcon> = {
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  BarChart3,
+  Target,
+  Shield,
+  Square,
+  Minus,
+  Clock,
+  Calendar,
+  Zap,
+  ArrowUp,
+  LineChart,
+};
+
+// 根据信号配置生成导航子项
+function createSignalSubItems(signals: SignalConfig[], category: "intraday" | "daily"): NavSubItem[] {
+  return signals
+    .filter((signal) => signal.enabled)
+    .map((signal) => ({
+      title: signal.displayName,
+      url: `/signals/${category}/${getUrlFromDbFieldName(signal.name) || signal.name.toLowerCase()}`,
+      icon: signal.icon ? iconMap[signal.icon] : Target,
+    }));
+}
+
+// 动态生成信号导航配置
+function generateSignalNavigation(): NavMainItem[] {
+  const intradaySignals = getSignalsByCategory("intraday");
+  const dailySignals = getSignalsByCategory("daily");
+
+  return [
+    {
+      title: "日内信号",
+      url: "/signals/intraday",
+      icon: Clock,
+      subItems: createSignalSubItems(intradaySignals, "intraday"),
+    },
+    {
+      title: "日线信号",
+      url: "/signals/daily",
+      icon: Calendar,
+      subItems: createSignalSubItems(dailySignals, "daily"),
+    },
+  ];
+}
+
+// 主导航配置
 export const sidebarItems: NavGroup[] = [
   {
     id: 1,
-    label: "Dashboards",
-    items: [
-      {
-        title: "Dashboards",
-        url: "/dashboard",
-        icon: Home,
-        subItems: [
-          { title: "Default", url: "/dashboard/default", icon: ChartPie },
-          { title: "CRM", url: "/dashboard", icon: Grid2X2, comingSoon: true },
-          { title: "Analytics", url: "/dashboard/analytics", icon: ChartLine, comingSoon: true },
-          { title: "eCommerce", url: "/dashboard/e-commerce", icon: ShoppingBag, comingSoon: true },
-          { title: "Academy", url: "/dashboard/academy", icon: BookA, comingSoon: true },
-          { title: "Logistics", url: "/dashboard/logistics", icon: Forklift, comingSoon: true },
-        ],
-      },
-    ],
+    label: "交易信号",
+    items: generateSignalNavigation(),
   },
   {
     id: 2,
-    label: "Pages",
+    label: "分析工具",
     items: [
       {
-        title: "Authentication",
-        url: "/auth",
-        icon: Fingerprint,
-        subItems: [
-          { title: "Login v1", url: "/auth/v1/login", newTab: true },
-          { title: "Register v1", url: "/auth/v1/register", newTab: true },
-        ],
+        title: "市场概览",
+        url: "/analysis/overview",
+        icon: LineChart,
       },
       {
-        title: "Email",
-        url: "/mail",
-        icon: Mail,
-        comingSoon: true,
-      },
-      {
-        title: "Chat",
-        url: "/chat",
-        icon: MessageSquare,
-        comingSoon: true,
-      },
-      {
-        title: "Calendar",
-        url: "/calendar",
-        icon: Calendar,
-        comingSoon: true,
-      },
-      {
-        title: "Kanban",
-        url: "/kanban",
-        icon: Kanban,
-        comingSoon: true,
-      },
-      {
-        title: "Invoice",
-        url: "/invoice",
-        icon: ReceiptText,
-        comingSoon: true,
-      },
-      {
-        title: "Users",
-        url: "/users",
-        icon: Users,
-        comingSoon: true,
-      },
-      {
-        title: "Roles",
-        url: "/roles",
-        icon: Lock,
-        comingSoon: true,
+        title: "信号仪表板",
+        url: "/analysis/dashboard",
+        icon: Zap,
       },
     ],
   },
   {
     id: 3,
-    label: "Misc",
+    label: "账户管理",
     items: [
       {
-        title: "Others",
-        url: "/others",
-        icon: SquareArrowUpRight,
-        comingSoon: true,
+        title: "用户认证",
+        url: "/auth",
+        icon: Fingerprint,
+        subItems: [
+          { title: "登录", url: "/auth/v1/login", newTab: true },
+          { title: "注册", url: "/auth/v1/register", newTab: true },
+        ],
       },
     ],
   },
 ];
+
+// 导出工具函数，供其他组件使用
+export function getSignalNavigationItems() {
+  return generateSignalNavigation();
+}
+
+// 根据路径获取对应的信号配置
+export function getSignalConfigFromPath(path: string): SignalConfig | null {
+  const pathParts = path.split("/");
+  if (pathParts.length < 4 || pathParts[1] !== "signals") {
+    return null;
+  }
+
+  const category = pathParts[2] as "intraday" | "daily";
+  const signalName = pathParts[3].toUpperCase();
+
+  const signals = getSignalsByCategory(category);
+  return signals.find((signal) => signal.name === signalName) ?? null;
+}

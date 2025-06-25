@@ -1,0 +1,301 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 后端API开发规范
+
+## 🗄️ Supabase集成
+
+### 客户端配置
+```typescript
+// src/lib/supabase/server.ts
+import { createServerClient } from '@supabase/ssr'
+
+export function createClient() {
+  return createServerClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+```
+
+### 环境变量
+```env
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+## 📊 数据访问模式
+
+### 信号数据查询
+
+#### 基于配置的信号查询
+```typescript
+import { getSignalsByCategory, getSignalByName, signalTypeMapping } from '@/config/signals-config'
+
+// 获取交易信号（基于配置）
+async function getSignals(category: 'intraday' | 'daily', signalName?: string) {
+  const supabase = createClient()
+  
+  // 获取该类别下的所有可用信号类型
+  const availableSignals = getSignalsByCategory(category)
+  const validSignalTypes = availableSignals
+    .filter(signal => signal.enabled)
+    .map(signal => signal.name)
+  
+  let query = supabase
+    .from('signals')
+    .select(`
+      id,
+      symbol,
+      signal_type,
+      category,
+      direction,
+      price,
+      confidence,
+      status,
+      created_at,
+      expires_at,
+      meta_data,
+      stock:symbol (
+        symbol,
+        name,
+        market
+      )
+    `)
+    .eq('category', category)
+    .eq('status', 'active')
+    .in('signal_type', validSignalTypes)
+    
+  // 如果指定了信号名称，进一步筛选
+  if (signalName) {
+    const signalConfig = getSignalByName(signalName)
+    if (signalConfig && signalConfig.enabled) {
+      query = query.eq('signal_type', signalName)
+    } else {
+      throw new Error(`信号类型 ${signalName} 不存在或已禁用`)
+    }
+  }
+  
+  return query.order('created_at', { ascending: false })
+}
+
+// 根据信号配置ID查询
+async function getSignalsByConfigId(configId: string) {
+  const supabase = createClient()
+  const signalConfig = getSignalConfigById(configId)
+  
+  if (!signalConfig || !signalConfig.enabled) {
+    throw new Error(`信号配置 ${configId} 不存在或已禁用`)
+  }
+  
+  return supabase
+    .from('signals')
+    .select('*')
+    .eq('signal_type', signalConfig.name)
+    .eq('category', signalConfig.category)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+}
+
+// 获取信号统计信息
+async function getSignalStats(category: 'intraday' | 'daily') {
+  const supabase = createClient()
+  const availableSignals = getSignalsByCategory(category)
+  
+  const stats = await Promise.all(
+    availableSignals.map(async (signalConfig) => {
+      const { count } = await supabase
+        .from('signals')
+        .select('id', { count: 'exact' })
+        .eq('signal_type', signalConfig.name)
+        .eq('category', category)
+        .eq('status', 'active')
+        
+      return {
+        ...signalConfig,
+        count: count || 0
+      }
+    })
+  )
+  
+  return stats
+}
+```
+
+### 用户数据管理
+```typescript
+// 获取用户配置
+async function getUserProfile(userId: string) {
+  const supabase = createClient()
+  
+  return supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+}
+
+// 更新用户调用次数
+async function updateUserCalls(userId: string, type: 'intraday' | 'daily') {
+  const supabase = createClient()
+  
+  const field = type === 'intraday' ? 'intraday_calls_today' : 'daily_calls_today'
+  
+  return supabase.rpc('increment_user_calls', {
+    user_id: userId,
+    call_type: field
+  })
+}
+```
+
+## 🔐 权限与安全
+
+### Row Level Security (RLS)
+```sql
+-- 用户只能访问自己的数据
+CREATE POLICY "Users can only access own data" ON user_profiles
+FOR ALL USING (auth.uid() = id);
+
+-- 信号数据公开只读
+CREATE POLICY "Signals are publicly readable" ON signals
+FOR SELECT USING (true);
+
+-- 查询记录需要认证
+CREATE POLICY "Authenticated users can insert queries" ON signal_queries
+FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+### API访问控制
+```typescript
+// 检查用户权限
+async function checkUserPermission(userId: string, action: string) {
+  const profile = await getUserProfile(userId)
+  
+  if (!profile) {
+    throw new Error('用户不存在')
+  }
+  
+  // 检查调用次数限制
+  const limits = {
+    free: { intraday: 10, daily: 5 },
+    pro: { intraday: 100, daily: 50 },
+    premium: { intraday: -1, daily: -1 } // 无限制
+  }
+  
+  const userLimit = limits[profile.tier as keyof typeof limits]
+  // 实现限制检查逻辑
+}
+```
+
+## 📈 数据处理
+
+### 信号数据结构
+```typescript
+interface Signal {
+  id: number
+  symbol: string
+  signal_type: 'BOS' | 'MSS' | 'FVG' | 'SSL' | 'OB'
+  category: 'intraday' | 'daily'
+  direction: 'BULLISH' | 'BEARISH'
+  price: number
+  confidence: number // 0-100
+  status: 'active' | 'expired' | 'triggered'
+  created_at: string
+  expires_at: string
+  meta_data: Record<string, any>
+  backtest?: {
+    success_rate: number
+    avg_return: number
+    max_drawdown: number
+  }
+}
+```
+
+### 数据验证
+```typescript
+import { z } from 'zod'
+
+const SignalSchema = z.object({
+  symbol: z.string().min(1),
+  signal_type: z.enum(['BOS', 'MSS', 'FVG', 'SSL', 'OB']),
+  category: z.enum(['intraday', 'daily']),
+  direction: z.enum(['BULLISH', 'BEARISH']),
+  price: z.number().positive(),
+  confidence: z.number().min(0).max(100)
+})
+
+// 使用验证
+function validateSignal(data: unknown) {
+  return SignalSchema.parse(data)
+}
+```
+
+## 🚀 性能优化
+
+### 查询优化
+- 使用适当的索引
+- 限制返回字段 (`select` 指定字段)
+- 实现分页加载
+- 缓存频繁查询的结果
+
+### 连接池管理
+```typescript
+// 使用连接池避免连接泄漏
+const supabase = createClient()
+
+// 确保在适当时机清理连接
+process.on('exit', () => {
+  // 清理资源
+})
+```
+
+## 🔧 错误处理
+
+### 统一错误响应
+```typescript
+interface ApiError {
+  code: string
+  message: string
+  details?: any
+}
+
+function handleSupabaseError(error: any): ApiError {
+  switch (error.code) {
+    case 'PGRST116':
+      return {
+        code: 'NOT_FOUND',
+        message: '请求的资源不存在'
+      }
+    case '42501':
+      return {
+        code: 'PERMISSION_DENIED',
+        message: '权限不足'
+      }
+    default:
+      return {
+        code: 'UNKNOWN_ERROR',
+        message: '服务器内部错误'
+      }
+  }
+}
+```
+
+### 重试机制
+```typescript
+async function withRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3
+): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation()
+    } catch (error) {
+      if (i === maxRetries - 1) throw error
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
+    }
+  }
+  throw new Error('操作失败')
+}
+```

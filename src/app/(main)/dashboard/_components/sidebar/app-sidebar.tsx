@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, CircleHelp, Search, Database, ClipboardList, File, Command } from "lucide-react";
+import { Settings, CircleHelp, Database, ClipboardList, File, Command } from "lucide-react";
 
 import {
   Sidebar,
@@ -14,6 +14,7 @@ import {
 import { APP_CONFIG } from "@/config/app-config";
 import { rootUser } from "@/data/users";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
+
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -29,11 +30,6 @@ const data = {
       title: "Get Help",
       url: "#",
       icon: CircleHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
     },
   ],
   documents: [

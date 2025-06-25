@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+CREATE TABLE public.chats (
+  id text NOT NULL,
+  user_id uuid DEFAULT auth.uid(),
+  payload jsonb,
+  CONSTRAINT chats_pkey PRIMARY KEY (id),
+  CONSTRAINT chats_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.signal_queries (
+  id integer NOT NULL DEFAULT nextval('signal_queries_id_seq'::regclass),
+  user_id uuid NOT NULL,
+  signal_id bigint NOT NULL,
+  queried_at timestamp with time zone DEFAULT now(),
+  category text,
+  CONSTRAINT signal_queries_pkey PRIMARY KEY (id),
+  CONSTRAINT signal_queries_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT signal_queries_signal_id_fkey FOREIGN KEY (signal_id) REFERENCES public.signals(id)
+);
+CREATE TABLE public.signals (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  symbol text,
+  signal_type text,
+  category text CHECK (category = ANY (ARRAY['intraday'::text, 'daily'::text])),
+  direction USER-DEFINED,
+  price numeric,
+  confidence numeric CHECK (confidence >= 0::numeric AND confidence <= 100::numeric),
+  status text DEFAULT 'active'::text,
+  meta_data jsonb,
+  backtest jsonb,
+  expires_at timestamp with time zone DEFAULT (now() + '30 days'::interval),
+  CONSTRAINT signals_pkey PRIMARY KEY (id),
+  CONSTRAINT signals_symbol_fkey FOREIGN KEY (symbol) REFERENCES public.stock(symbol)
+);
+CREATE TABLE public.stock (
+  symbol text NOT NULL,
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  name text,
+  meta_data jsonb,
+  market text,
+  CONSTRAINT stock_pkey PRIMARY KEY (symbol)
+);
+CREATE TABLE public.user_model_keys (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  name text NOT NULL,
+  provider text NOT NULL,
+  key text NOT NULL,
+  base_url text,
+  is_default boolean DEFAULT false,
+  CONSTRAINT user_model_keys_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.user_profiles (
+  id uuid NOT NULL,
+  tier text NOT NULL DEFAULT 'free'::text CHECK (tier = ANY (ARRAY['free'::text, 'pro'::text, 'premium'::text])),
+  intraday_calls_today integer DEFAULT 0,
+  daily_calls_today integer DEFAULT 0,
+  last_reset timestamp with time zone DEFAULT now(),
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT user_profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT user_profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);

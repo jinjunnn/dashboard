@@ -10,7 +10,11 @@ import { APP_CONFIG } from "@/config/app-config";
 
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+  fallback: ['system-ui', 'arial']
+});
 
 export const metadata: Metadata = {
   title: APP_CONFIG.meta.title,

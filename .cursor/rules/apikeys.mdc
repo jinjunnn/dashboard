@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+.env中包含的环境变量名：
+
+- SUPABASE_URL: supabase的链接地址
+- SUPABASE_SERVICE_ROLE_KEY: supabase的service_role_key

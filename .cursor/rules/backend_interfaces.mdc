@@ -1,0 +1,135 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 后端接口文档
+
+## 📋 接口概览
+
+本文档记录项目中所有后端接口的简要信息，供AI Agent参考使用。每次新增或变更接口时都需要更新此文档。
+
+## 🗄️ Supabase 数据库接口
+
+### 信号查询接口
+
+#### `getSignals(category, signalName?)`
+- **功能**: 获取交易信号列表（支持配置驱动）
+- **参数**: 
+  - `category`: 'intraday' | 'daily'
+  - `signalName?`: 可选，特定信号类型名称
+- **返回**: Signal[] 数组
+- **特点**: 基于signals-config.ts配置，只返回启用的信号类型
+
+#### `getSignalsByConfigId(configId)`
+- **功能**: 根据信号配置ID查询信号
+- **参数**: `configId` - 信号配置ID
+- **返回**: Signal[] 数组
+- **特点**: 包含配置验证和错误处理
+
+#### `getSignalStats(category)`
+- **功能**: 获取信号统计信息
+- **参数**: `category` - 'intraday' | 'daily'
+- **返回**: 信号配置 + 数量统计
+- **特点**: 返回每个信号类型的数量统计
+
+### 用户管理接口
+
+#### `getUserProfile(userId)`
+- **功能**: 获取用户配置信息
+- **参数**: `userId` - 用户ID
+- **返回**: UserProfile 对象
+- **特点**: 包含用户等级和调用次数限制
+
+#### `updateUserCalls(userId, type)`
+- **功能**: 更新用户调用次数
+- **参数**: 
+  - `userId` - 用户ID
+  - `type` - 'intraday' | 'daily'
+- **返回**: 更新结果
+- **特点**: 自动递增调用次数
+
+#### `checkUserPermission(userId, action)`
+- **功能**: 检查用户权限
+- **参数**: 
+  - `userId` - 用户ID
+  - `action` - 操作类型
+- **返回**: 权限检查结果
+- **特点**: 基于用户等级的限制检查
+
+## 📊 数据结构
+
+### Signal 接口
+```typescript
+interface Signal {
+  id: number
+  symbol: string
+  signal_type: string
+  category: 'intraday' | 'daily'
+  direction: 'BULLISH' | 'BEARISH'
+  price: number
+  confidence: number
+  status: string
+  created_at: string
+  expires_at: string
+  meta_data: Record<string, any>
+  backtest?: BacktestData
+}
+```
+
+### UserProfile 接口
+```typescript
+interface UserProfile {
+  id: string
+  tier: 'free' | 'pro' | 'premium'
+  intraday_calls_today: number
+  daily_calls_today: number
+  last_reset: string
+  created_at: string
+}
+```
+
+## 🔄 更新规则
+
+1. **新增接口** - 添加接口名称、功能、参数、返回值说明
+2. **修改接口** - 更新对应接口的参数或返回值说明
+3. **删除接口** - 移除对应接口信息并在changelog中记录
+4. **数据结构变更** - 同步更新相关接口的数据结构说明
+
+### 配置相关接口
+
+#### `getSignalsByCategory(category)`
+- **功能**: 根据类别获取信号配置列表
+- **参数**: `category` - 'intraday' | 'daily'
+- **返回**: SignalConfig[] 数组
+- **特点**: 从signals-config.ts配置文件获取
+
+#### `getSignalByName(name)`
+- **功能**: 根据信号名称获取配置
+- **参数**: `name` - 信号类型名称
+- **返回**: SignalConfig | undefined
+- **特点**: 支持配置验证和错误处理
+
+#### `getSignalConfigById(configId)`
+- **功能**: 根据配置ID获取信号配置
+- **参数**: `configId` - 信号配置ID
+- **返回**: SignalConfig | undefined
+- **特点**: 用于配置驱动的信号查询
+
+### 服务层接口
+
+#### `searchSignals(searchTerm, category?)`
+- **功能**: 搜索信号（支持股票代码和名称）
+- **参数**: 
+  - `searchTerm` - 搜索关键词
+  - `category?` - 可选，信号类别
+- **返回**: Signal[] 数组
+- **特点**: 支持模糊搜索和分类筛选
+
+## 📝 维护说明
+
+- 此文档仅记录接口的基本信息，详细实现请参考 `backend_api.mdc`
+- 每次接口变更都必须同时更新此文档和changelog.md
+- 接口命名应保持一致性和语义化
+- 配置相关接口主要来自 `signals-config.ts` 配置文件
+- 服务层接口位于 `src/lib/services/signals-service.ts`

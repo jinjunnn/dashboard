@@ -1,0 +1,240 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 前端UI开发规范
+
+## 🎨 设计系统
+
+### UI组件库
+- **主要框架**: [shadcn/ui](mdc:https:/ui.shadcn.com) - 基于Radix UI和Tailwind CSS
+- **图表库**: [Recharts](mdc:https:/recharts.org) - 用于数据可视化
+- **图标库**: [Lucide React](mdc:https:/lucide.dev) - 现代图标集合
+
+### 色彩系统
+```css
+/* 主要颜色 */
+--primary: 主品牌色
+--secondary: 次要色彩  
+--muted: 柔和背景色
+--accent: 强调色
+
+/* 语义颜色 */
+--destructive: 危险/错误色
+--success: 成功色
+--warning: 警告色
+--info: 信息色
+
+/* 中性色 */
+--background: 背景色
+--foreground: 前景文字色
+--border: 边框色
+```
+
+## 🧱 组件使用规范
+
+### 基础组件优先级
+1. **首选**: 使用 `src/components/ui/` 中的现有组件
+2. **扩展**: 基于现有组件进行组合和扩展
+3. **最后**: 创建全新的自定义组件
+
+### 常用组件示例
+```tsx
+// 按钮组件
+import { Button } from "@/components/ui/button"
+<Button variant="default" size="sm">点击</Button>
+
+// 表格组件
+import { Table } from "@/components/ui/table"
+<Table>...</Table>
+
+// 表单组件
+import { Form } from "@/components/ui/form"
+<Form>...</Form>
+```
+
+### 数据表格
+```tsx
+// 使用统一的数据表格组件
+import { DataTable } from "@/components/data-table/data-table"
+
+<DataTable
+  columns={columns}
+  data={data}
+  searchKey="symbol"
+/>
+```
+
+### 配置驱动的组件开发
+
+#### 信号类型选择器
+```tsx
+import { getSignalsByCategory } from "@/config/signals-config"
+
+function SignalTypeSelector({ category, onSelect }: Props) {
+  const signals = getSignalsByCategory(category)
+  const enabledSignals = signals.filter(signal => signal.enabled)
+  
+  return (
+    <Select onValueChange={onSelect}>
+      <SelectContent>
+        {enabledSignals.map(signal => (
+          <SelectItem key={signal.id} value={signal.name}>
+            <div className="flex items-center gap-2">
+              <div 
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: signal.color }}
+              />
+              {signal.displayName}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
+```
+
+#### 导航菜单配置
+```tsx
+import { getSignalsByCategory } from "@/config/signals-config"
+
+function SignalNavigation() {
+  const intradaySignals = getSignalsByCategory('intraday')
+  const dailySignals = getSignalsByCategory('daily')
+  
+  return (
+    <nav>
+      <div>
+        <h3>日内信号</h3>
+        {intradaySignals.map(signal => (
+          <Link 
+            key={signal.id}
+            href={`/signals/intraday/${signal.name.toLowerCase()}`}
+          >
+            {signal.displayName}
+          </Link>
+        ))}
+      </div>
+      <div>
+        <h3>日线信号</h3>
+        {dailySignals.map(signal => (
+          <Link 
+            key={signal.id}
+            href={`/signals/daily/${signal.name.toLowerCase()}`}
+          >
+            {signal.displayName}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  )
+}
+```
+
+## 📱 响应式设计
+
+### 断点系统 (Tailwind CSS)
+```css
+sm: 640px   /* 小屏设备 */
+md: 768px   /* 平板设备 */
+lg: 1024px  /* 桌面小屏 */
+xl: 1280px  /* 桌面大屏 */
+2xl: 1536px /* 超大屏幕 */
+```
+
+### 响应式原则
+- **移动优先**: 默认样式适配移动端
+- **渐进增强**: 大屏幕提供更多功能
+- **触摸友好**: 按钮和链接有足够的点击区域
+
+## 🌓 主题系统
+
+### 深色模式支持
+```tsx
+// 使用 next-themes 进行主题切换
+import { useTheme } from "next-themes"
+
+const { theme, setTheme } = useTheme()
+```
+
+### 主题色彩变量
+```css
+/* 亮色主题 */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+}
+
+/* 深色主题 */
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+}
+```
+
+## 🚀 性能优化
+
+### 组件优化
+```tsx
+// 使用 React.memo 避免不必要的重渲染
+import { memo } from "react"
+
+const DataTable = memo(({ data, columns }) => {
+  // 组件实现
+})
+
+// 使用 useMemo 缓存计算结果
+const processedData = useMemo(() => {
+  return data.map(transformData)
+}, [data])
+```
+
+### 图片优化
+```tsx
+// 使用 Next.js Image 组件
+import Image from "next/image"
+
+<Image
+  src="/avatar.png"
+  alt="头像"
+  width={40}
+  height={40}
+  className="rounded-full"
+/>
+```
+
+## 🔧 开发最佳实践
+
+### 组件结构
+```tsx
+// 标准组件结构
+interface ComponentProps {
+  // Props类型定义
+}
+
+export function Component({ ...props }: ComponentProps) {
+  // Hooks和状态
+  // 事件处理函数
+  // 渲染逻辑
+  
+  return (
+    <div className="组件样式">
+      {/* JSX内容 */}
+    </div>
+  )
+}
+```
+
+### 样式规范
+- **优先使用Tailwind类名**
+- **避免内联样式**
+- **使用CSS变量进行主题适配**
+- **保持类名简洁和语义化**
+
+### 无障碍性 (a11y)
+- 为交互元素添加合适的 `aria-label`
+- 确保键盘导航可用
+- 保持足够的颜色对比度
+- 为表单元素关联标签

@@ -1,0 +1,84 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 环境变量配置规范
+
+## 🔧 Supabase环境变量配置
+
+### 必需的环境变量
+
+在项目根目录创建 `.env` 文件，添加以下配置：
+
+```bash
+# Supabase配置
+# 服务端使用（用于API路由和服务端组件）
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# 客户端使用（用于客户端组件）
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 配置说明
+
+1. **SUPABASE_URL** 和 **NEXT_PUBLIC_SUPABASE_URL**
+   - 应该是同一个值
+   - 格式：`https://your-project-id.supabase.co`
+
+2. **SUPABASE_SERVICE_ROLE_KEY**
+   - 管理员密钥，权限较高，只能在服务端使用
+   - 用于API路由和服务端组件
+
+3. **NEXT_PUBLIC_SUPABASE_ANON_KEY**
+   - 公共密钥，权限较低，可以在客户端使用
+   - 用于客户端组件
+
+### 如何获取密钥
+
+1. 登录 [Supabase Dashboard](https://app.supabase.com/)
+2. 选择项目 → Settings → API
+3. 获取对应的URL和密钥
+
+## 🏗️ 架构规范
+
+### 客户端/服务端分离
+- **API路由** (`/api/search`) - 服务端处理，使用service_role_key
+- **客户端服务** (`search-service-client.ts`) - 调用API路由
+- **分离的Supabase客户端**:
+  - `server.ts` - 服务端客户端
+  - `client.ts` - 客户端客户端
+
+### 数据流架构
+```
+客户端组件 → API路由 → 服务端Supabase客户端 → 数据库
+```
+
+## 🔒 安全规范
+
+1. **永远不要在客户端暴露 service_role_key**
+2. **公共密钥权限应该适当限制**
+3. **确保RLS（行级安全）正确配置**
+4. **定期轮换API密钥**
+
+## 🐛 常见错误处理
+
+### Error: supabaseUrl is required
+- 检查 `.env` 文件位置（项目根目录）
+- 检查变量名称（区分大小写）
+- 重启开发服务器
+
+### 客户端组件环境变量问题
+- 客户端组件只能访问 `NEXT_PUBLIC_` 前缀的变量
+- 服务端变量通过API路由访问
+
+## 📋 验证清单
+
+- [ ] `.env` 文件在项目根目录
+- [ ] 所有4个环境变量已配置
+- [ ] 重启开发服务器
+- [ ] 搜索功能正常工作
+- [ ] 无环境变量相关错误
+

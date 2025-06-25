@@ -1,0 +1,550 @@
+import { Suspense } from "react"
+import { notFound } from "next/navigation"
+import { findSignalConfig, getDirectionLabel, getDirectionColor } from "@/config/signals-config"
+import { getSignals } from "@/lib/services/signals-service"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { LoadingCard } from "@/components/ui/loading-spinner"
+import { SignalsTable } from "@/components/signals/signals-table"
+import { TrendingUp, Activity, BarChart3, Target, Shield, Square, Zap, ArrowLeft } from "lucide-react"
+import Link from "next/link"
+
+// 图标映射
+const iconMap = {
+  TrendingUp,
+  Activity,
+  BarChart3,
+  Target,
+  Shield,
+  Square,
+  Zap,
+}
+
+// 风险等级颜色映射
+const riskLevelColors = {
+  R1: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+  R2: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400", 
+  R3: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+  R4: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+}
+
+interface SignalDetailPageProps {
+  params: Promise<{
+    signalType: string
+    id: string
+  }>
+}
+
+// 获取单个信号的详细数据
+async function getSignalDetailData(signalId: string, signalType: string) {
+  try {
+    // 验证信号类型是否存在
+    const signalConfig = findSignalConfig(signalType, "intraday")
+    if (!signalConfig) {
+      return null
+    }
+
+    // 首先获取所有日内信号来找到这个信号
+    const allSignals = await getSignals({
+      category: "intraday",
+      limit: 1000
+    })
+    
+    // 查找指定ID的信号
+    const signal = allSignals.find(s => s.id.toString() === signalId)
+    
+    if (!signal) {
+      return null
+    }
+    
+    // 验证信号类型是否匹配
+    const actualSignalConfig = findSignalConfig(signal.signal_type, "intraday")
+    if (!actualSignalConfig || actualSignalConfig.name !== signalConfig.name) {
+      return null
+    }
+    
+    // 获取相同类型的其他信号
+    const relatedSignals = allSignals.filter(s => 
+      s.signal_type === signal.signal_type && s.id !== signal.id
+    ).slice(0, 10)
+    
+    return {
+      signal,
+      signalConfig,
+      relatedSignals
+    }
+  } catch (error) {
+    console.error("获取信号详情失败:", error)
+    return null
+  }
+}
+
+// Loading组件
+function SignalDetailLoading() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <div className="w-24 h-8 bg-gray-200 rounded animate-pulse" />
+        <div className="w-48 h-8 bg-gray-200 rounded animate-pulse" />
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {[...Array(3)].map((_, i) => (
+          <LoadingCard key={i} title="正在加载信号信息..." />
+        ))}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        {[...Array(2)].map((_, i) => (
+          <LoadingCard key={i} title="正在加载分析数据..." />
+        ))}
+      </div>
+      <LoadingCard title="正在加载交易建议..." />
+    </div>
+  )
+}
+
+// 信号详情页面组件
+async function SignalDetailContent({ params }: SignalDetailPageProps) {
+  const resolvedParams = await params
+  const { signalType, id } = resolvedParams
+  
+  // 获取信号详情数据
+  const data = await getSignalDetailData(id, signalType)
+  
+  if (!data) {
+    notFound()
+  }
+  
+  const { signal, signalConfig, relatedSignals } = data
+  const IconComponent = signalConfig.icon ? iconMap[signalConfig.icon as keyof typeof iconMap] : Target
+  
+  // 格式化价格显示
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('zh-CN', {
+      style: 'currency',
+      currency: 'CNY',
+      minimumFractionDigits: 2,
+    }).format(price)
+  }
+  
+  // 格式化日期显示
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+  
+  // 生成模拟的技术分析数据
+  const generateTechnicalData = (signal: any) => {
+    const basePrice = signal.price
+    const priceVariation = basePrice * 0.1
+    
+    return {
+      supportLevel: Math.round((basePrice - priceVariation * 0.3) * 100) / 100,
+      resistanceLevel: Math.round((basePrice + priceVariation * 0.4) * 100) / 100,
+      targetPrice: Math.round((basePrice + priceVariation * 0.6) * 100) / 100,
+      stopLoss: Math.round((basePrice - priceVariation * 0.2) * 100) / 100,
+      riskRewardRatio: "1:2.8",
+      volatility: Math.round((15 + Math.random() * 20) * 10) / 10,
+      trendStrength: Math.round((70 + Math.random() * 25) * 10) / 10,
+      volume: Math.round((signal.id * 1000 + Math.random() * 50000)),
+      avgVolume: Math.round((signal.id * 800 + Math.random() * 40000)),
+    }
+  }
+  
+  // 生成模拟的历史表现数据
+  const generatePerformanceData = (signalConfig: any) => {
+    return {
+      successRate: Math.round((75 + Math.random() * 20) * 10) / 10,
+      avgReturn: Math.round((8 + Math.random() * 15) * 10) / 10,
+      maxDrawdown: Math.round((3 + Math.random() * 8) * 10) / 10,
+      totalTrades: Math.round(120 + Math.random() * 180),
+      winningTrades: 0,
+      losingTrades: 0,
+      avgHoldingPeriod: Math.round(2 + Math.random() * 8),
+      sharpeRatio: Math.round((1.2 + Math.random() * 1.5) * 100) / 100,
+    }
+  }
+  
+  const technicalData = generateTechnicalData(signal)
+  const performanceData = generatePerformanceData(signalConfig)
+  performanceData.winningTrades = Math.round(performanceData.totalTrades * performanceData.successRate / 100)
+  performanceData.losingTrades = performanceData.totalTrades - performanceData.winningTrades
+  
+  return (
+    <div className="space-y-6">
+      {/* 返回按钮和标题 */}
+      <div className="flex items-center gap-4">
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/signals/intraday/${signalType}`}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            返回 {signalConfig.displayName} 列表
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <div 
+              className="p-2 rounded-lg"
+              style={{ 
+                backgroundColor: `${signalConfig.color}20`,
+                color: signalConfig.color 
+              }}
+            >
+              <IconComponent className="h-6 w-6" />
+            </div>
+            信号详情 #{signal.id}
+          </h1>
+          <div className="flex items-center gap-2 mt-2">
+            <Badge 
+              variant="secondary" 
+              className={riskLevelColors[signalConfig.riskLevel]}
+            >
+              {signalConfig.displayName}
+            </Badge>
+            <Badge 
+              variant="outline" 
+              className={getDirectionColor(signalConfig.direction)}
+            >
+              {getDirectionLabel(signalConfig.direction)}
+            </Badge>
+            <Badge variant="outline">
+              风险等级: {signalConfig.riskLevel}
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      {/* 信号基本信息卡片 */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* 股票信息 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              股票信息
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">股票代码</div>
+                <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                  {signal.symbol}
+                </code>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">股票名称</div>
+                <div className="font-medium">{signal.stock?.name || "未知"}</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">市场</div>
+                <Badge variant="outline">{signal.stock?.market || "-"}</Badge>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">信号价格</div>
+                <div className="font-mono font-semibold text-lg">{formatPrice(signal.price)}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 信号详情 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              信号详情
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">信号类型</div>
+                <Badge variant="outline">{signal.signal_type}</Badge>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">方向</div>
+                <Badge 
+                  variant={signal.direction === "BULLISH" ? "default" : "destructive"}
+                >
+                  {signal.direction === "BULLISH" ? "看涨" : "看跌"}
+                </Badge>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">置信度</div>
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold">{signal.confidence}%</div>
+                  <div className="w-16 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
+                      style={{ width: `${signal.confidence}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">创建时间</div>
+                <div className="text-sm">{formatDate(signal.created_at)}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 市场环境 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              市场环境
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">趋势强度</div>
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold">{technicalData.trendStrength}%</div>
+                  <div className="w-16 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                    <div 
+                      className="bg-green-600 h-2 rounded-full" 
+                      style={{ width: `${technicalData.trendStrength}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">波动率</div>
+                <div className="font-semibold">{technicalData.volatility}%</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">成交量</div>
+                <div className="font-mono text-sm">{technicalData.volume.toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">平均成交量</div>
+                <div className="font-mono text-sm">{technicalData.avgVolume.toLocaleString()}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 技术分析和风险管理 */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* 技术分析 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              技术分析
+            </CardTitle>
+            <CardDescription>
+              基于技术指标的关键价位分析
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">支撑位</div>
+                <div className="font-mono font-semibold text-green-600">
+                  {formatPrice(technicalData.supportLevel)}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">阻力位</div>
+                <div className="font-mono font-semibold text-red-600">
+                  {formatPrice(technicalData.resistanceLevel)}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">目标价位</div>
+                <div className="font-mono font-semibold text-blue-600">
+                  {formatPrice(technicalData.targetPrice)}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">止损位</div>
+                <div className="font-mono font-semibold text-orange-600">
+                  {formatPrice(technicalData.stopLoss)}
+                </div>
+              </div>
+            </div>
+            <div className="pt-2 border-t">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">风险收益比</span>
+                <Badge variant="outline" className="font-mono">
+                  {technicalData.riskRewardRatio}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 历史表现 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              历史表现
+            </CardTitle>
+            <CardDescription>
+              该信号类型的历史统计数据
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">成功率</div>
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold text-green-600">{performanceData.successRate}%</div>
+                  <div className="w-16 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                    <div 
+                      className="bg-green-600 h-2 rounded-full" 
+                      style={{ width: `${performanceData.successRate}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">平均收益</div>
+                <div className="font-semibold text-blue-600">+{performanceData.avgReturn}%</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">最大回撤</div>
+                <div className="font-semibold text-red-600">-{performanceData.maxDrawdown}%</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">夏普比率</div>
+                <div className="font-semibold">{performanceData.sharpeRatio}</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">总交易次数</div>
+                <div className="font-semibold">{performanceData.totalTrades}</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">平均持仓</div>
+                <div className="font-semibold">{performanceData.avgHoldingPeriod}天</div>
+              </div>
+            </div>
+            <div className="pt-2 border-t">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-green-600">盈利: {performanceData.winningTrades}次</span>
+                <span className="text-red-600">亏损: {performanceData.losingTrades}次</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 交易建议 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            交易建议
+          </CardTitle>
+          <CardDescription>
+            基于当前信号的交易策略建议
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="space-y-3">
+              <h4 className="font-semibold text-green-600">入场策略</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">建议入场价</span>
+                  <span className="font-mono">{formatPrice(signal.price * 0.998)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">最佳入场区间</span>
+                  <span className="font-mono">{formatPrice(signal.price * 0.995)} - {formatPrice(signal.price * 1.002)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">建议仓位</span>
+                  <Badge variant="outline">{signalConfig.riskLevel === "R1" ? "30-40%" : signalConfig.riskLevel === "R2" ? "20-30%" : signalConfig.riskLevel === "R3" ? "10-20%" : "5-10%"}</Badge>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <h4 className="font-semibold text-blue-600">持仓管理</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">止损位</span>
+                  <span className="font-mono text-red-600">{formatPrice(technicalData.stopLoss)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">第一目标</span>
+                  <span className="font-mono text-green-600">{formatPrice(technicalData.targetPrice * 0.7)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">最终目标</span>
+                  <span className="font-mono text-blue-600">{formatPrice(technicalData.targetPrice)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <h4 className="font-semibold text-purple-600">风险提示</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className={riskLevelColors[signalConfig.riskLevel]}>
+                    {signalConfig.riskLevel}
+                  </Badge>
+                  <span className="text-muted-foreground">风险等级</span>
+                </div>
+                <div className="text-muted-foreground">
+                  {signalConfig.riskLevel === "R1" ? "低风险，适合稳健投资者" : 
+                   signalConfig.riskLevel === "R2" ? "中低风险，适合一般投资者" :
+                   signalConfig.riskLevel === "R3" ? "中高风险，需要谨慎操作" : 
+                   "高风险，仅适合经验丰富的投资者"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  * 以上建议仅供参考，投资有风险，入市需谨慎
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 相关信号 */}
+      {relatedSignals.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              相关信号
+            </CardTitle>
+            <CardDescription>
+              同类型的其他信号
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SignalsTable 
+              signals={relatedSignals} 
+              title="相关信号列表"
+              category="intraday"
+              signalType={signalType}
+              isSignalPage={true}
+            />
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+// 导出主页面
+export default function SignalDetailPage({ params }: SignalDetailPageProps) {
+  return (
+    <Suspense fallback={<SignalDetailLoading />}>
+      <SignalDetailContent params={params} />
+    </Suspense>
+  )
+} 
