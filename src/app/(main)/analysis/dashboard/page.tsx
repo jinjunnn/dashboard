@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSignalsByCategory } from "@/config/signals-config";
-import { getSignalStats } from "@/lib/services/signals-service";
+import { getSignalStatsFromDatabase } from "@/lib/database/signals-query";
 
 // 获取真实的信号统计数据
 async function getSignalStatsData(category: "intraday" | "daily") {
   try {
-    const stats = await getSignalStats(category);
+    const stats = await getSignalStatsFromDatabase(category);
     return stats;
   } catch (error) {
     console.error(`获取${category}信号统计失败:`, error);
@@ -24,15 +24,10 @@ async function SignalStatsSection({ category }: { category: "intraday" | "daily"
 
   if (statsData.length === 0) {
     return (
-      <div className="text-center py-8">
-        <div className="text-muted-foreground">
-          {category === "daily" ? "暂无日线信号数据" : "暂无日内信号数据"}
-        </div>
-        <div className="text-xs text-muted-foreground mt-2">
-          {category === "daily" 
-            ? "当前数据库中仅包含日内信号数据" 
-            : "请检查数据库连接或数据源配置"
-          }
+      <div className="py-8 text-center">
+        <div className="text-muted-foreground">{category === "daily" ? "暂无日线信号数据" : "暂无日内信号数据"}</div>
+        <div className="text-muted-foreground mt-2 text-xs">
+          {category === "daily" ? "当前数据库中仅包含日内信号数据" : "请检查数据库连接或数据源配置"}
         </div>
       </div>
     );
@@ -162,16 +157,22 @@ export default function SignalDashboardPage() {
       {/* 数据源说明 */}
       <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
         <CardHeader>
-          <CardTitle className="text-blue-800 dark:text-blue-400">
-            数据源说明
-          </CardTitle>
+          <CardTitle className="text-blue-800 dark:text-blue-400">数据源说明</CardTitle>
         </CardHeader>
         <CardContent className="text-blue-700 dark:text-blue-300">
           <ul className="space-y-2 text-sm">
-            <li>• <strong>日内信号</strong>：来自Supabase数据库的实时数据</li>
-            <li>• <strong>日线信号</strong>：当前数据库中暂无数据，显示为空</li>
-            <li>• <strong>统计更新</strong>：每次页面加载时从数据库实时获取</li>
-            <li>• <strong>数据完整性</strong>：建议添加日线信号数据源以获得完整分析</li>
+            <li>
+              • <strong>日内信号</strong>：来自Supabase数据库的实时数据
+            </li>
+            <li>
+              • <strong>日线信号</strong>：当前数据库中暂无数据，显示为空
+            </li>
+            <li>
+              • <strong>统计更新</strong>：每次页面加载时从数据库实时获取
+            </li>
+            <li>
+              • <strong>数据完整性</strong>：建议添加日线信号数据源以获得完整分析
+            </li>
           </ul>
         </CardContent>
       </Card>

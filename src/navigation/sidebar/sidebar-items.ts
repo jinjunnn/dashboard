@@ -13,6 +13,7 @@ import {
   Square,
   Minus,
   ArrowUp,
+  RefreshCw,
   type LucideIcon,
 } from "lucide-react";
 
@@ -56,6 +57,7 @@ const iconMap: Record<string, LucideIcon> = {
   Zap,
   ArrowUp,
   LineChart,
+  RefreshCw,
 };
 
 // 根据信号配置生成导航子项

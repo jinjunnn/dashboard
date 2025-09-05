@@ -1,0 +1,54 @@
+# 依赖项
+node_modules
+npm-debug.log*
+
+# Next.js 构建输出
+.next
+out
+
+# 环境变量文件
+.env
+.env.local
+.env.production
+.env.staging
+
+# 开发和调试文件
+*.log
+.DS_Store
+.idea
+.vscode
+
+# Git 相关
+.git
+.gitignore
+
+# 测试文件
+coverage
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# 临时文件
+*.tmp
+*.temp
+
+# 文档和媒体文件
+README.md
+docs/
+media/
+backup-usage.md
+changelog.md
+
+# 其他配置文件
+.eslintrc*
+.prettierrc*
+.prettierignore
+tsconfig.tsbuildinfo
+
+# Docker 相关文件
+Dockerfile
+docker-compose.yml
+.dockerignore
+docker-*.md
+docker-*.sh 

@@ -50,4 +50,4 @@ export default async function AnalysisLayout({ children }: Readonly<{ children: 
       </SidebarInset>
     </SidebarProvider>
   );
-} 
+}

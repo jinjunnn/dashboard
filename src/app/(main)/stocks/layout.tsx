@@ -50,4 +50,4 @@ export default async function StocksLayout({ children }: Readonly<{ children: Re
       </SidebarInset>
     </SidebarProvider>
   );
-} 
+}

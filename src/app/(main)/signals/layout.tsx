@@ -1,12 +1,11 @@
-import { ReactNode } from "react";
+"use client";
 
-import { cookies } from "next/headers";
+import { ReactNode } from "react";
 
 import { AppSidebar } from "@/app/(main)/signals/_components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { users } from "@/data/users";
-import { getSidebarVariant, getSidebarCollapsible, getContentLayout } from "@/lib/layout-preferences";
 import { cn } from "@/lib/utils";
 
 import { AccountSwitcher } from "./_components/sidebar/account-switcher";
@@ -14,13 +13,11 @@ import { LayoutControls } from "./_components/sidebar/layout-controls";
 import { EnhancedSearchDialog } from "@/components/search/enhanced-search-dialog";
 import { ThemeSwitcher } from "./_components/sidebar/theme-switcher";
 
-export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
-
-  const sidebarVariant = await getSidebarVariant();
-  const sidebarCollapsible = await getSidebarCollapsible();
-  const contentLayout = await getContentLayout();
+export default function Layout({ children }: Readonly<{ children: ReactNode }>) {
+  const defaultOpen = true;
+  const sidebarVariant = "sidebar";
+  const sidebarCollapsible = "icon";
+  const contentLayout = "default";
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

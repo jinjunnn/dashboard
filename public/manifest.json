@@ -1,0 +1,146 @@
+{
+  "name": "股票信号分析系统",
+  "short_name": "信号分析",
+  "description": "专业的股票交易信号分析和监控平台",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "productivity", "business"],
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile-1.png", 
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "日内信号",
+      "short_name": "日内",
+      "description": "查看实时日内交易信号",
+      "url": "/signals/intraday",
+      "icons": [
+        {
+          "src": "/icons/shortcut-intraday.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "日线信号",
+      "short_name": "日线", 
+      "description": "查看日线级别交易信号",
+      "url": "/signals/daily",
+      "icons": [
+        {
+          "src": "/icons/shortcut-daily.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "股票分析",
+      "short_name": "分析",
+      "description": "股票技术分析和数据",
+      "url": "/stocks",
+      "icons": [
+        {
+          "src": "/icons/shortcut-stocks.png",
+          "sizes": "96x96", 
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "分析仪表板",
+      "short_name": "仪表板",
+      "description": "综合分析仪表板",
+      "url": "/analysis/dashboard",
+      "icons": [
+        {
+          "src": "/icons/shortcut-dashboard.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope": "/",
+  "id": "stock-signals-analyzer",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+stocksignal",
+      "url": "/signals/%s"
+    }
+  ]
+}

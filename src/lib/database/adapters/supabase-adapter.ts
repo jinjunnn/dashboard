@@ -1,5 +1,5 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { DatabaseClient } from '../types';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { DatabaseClient } from "../types";
 
 export class SupabaseDatabaseAdapter implements DatabaseClient {
   private client: SupabaseClient;
@@ -11,7 +11,7 @@ export class SupabaseDatabaseAdapter implements DatabaseClient {
   async query(sql: string, params?: any[]): Promise<any> {
     // Supabase 使用 rpc 调用存储过程或直接使用表操作
     // 这里需要根据你的具体需求来实现
-    throw new Error('Supabase adapter: 请使用 Supabase 的表操作方法');
+    throw new Error("Supabase adapter: 请使用 Supabase 的表操作方法");
   }
 
   async transaction(callback: (client: DatabaseClient) => Promise<any>): Promise<any> {
@@ -42,4 +42,4 @@ export class SupabaseDatabaseAdapter implements DatabaseClient {
   get storage() {
     return this.client.storage;
   }
-} 
+}

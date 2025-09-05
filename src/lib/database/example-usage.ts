@@ -1,4 +1,4 @@
-import { getDatabaseClient, getCacheClient, getSupabaseClient } from './factory';
+import { getDatabaseClient, getCacheClient, getSupabaseClient } from "./factory";
 
 /**
  * 示例：用户数据访问层
@@ -9,25 +9,18 @@ export class UserService {
    */
   async getUser(userId: string) {
     const db = getDatabaseClient();
-    
+
     // 检查是否为 Supabase 环境
     try {
       const supabase = getSupabaseClient();
       // 使用 Supabase 的表操作
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
+      const { data, error } = await supabase.from("users").select("*").eq("id", userId).single();
+
       if (error) throw error;
       return data;
     } catch {
       // 使用原生 SQL（PostgreSQL）
-      const result = await db.query(
-        'SELECT * FROM users WHERE id = $1',
-        [userId]
-      );
+      const result = await db.query("SELECT * FROM users WHERE id = $1", [userId]);
       return result[0];
     }
   }
@@ -37,25 +30,21 @@ export class UserService {
    */
   async createUser(userData: any) {
     const db = getDatabaseClient();
-    
+
     return await db.transaction(async (tx) => {
       try {
         const supabase = getSupabaseClient();
         // Supabase 创建用户
-        const { data, error } = await supabase
-          .from('users')
-          .insert(userData)
-          .select()
-          .single();
-        
+        const { data, error } = await supabase.from("users").insert(userData).select().single();
+
         if (error) throw error;
         return data;
       } catch {
         // PostgreSQL 创建用户
-        const result = await tx.query(
-          'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-          [userData.name, userData.email]
-        );
+        const result = await tx.query("INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *", [
+          userData.name,
+          userData.email,
+        ]);
         return result[0];
       }
     });
@@ -71,11 +60,11 @@ export class CacheService {
   async getUserCache(userId: string) {
     const key = `user:${userId}`;
     const cached = await this.cache.get(key);
-    
+
     if (cached) {
       return JSON.parse(cached);
     }
-    
+
     return null;
   }
 
@@ -100,17 +89,17 @@ export class UserManager {
   async getUser(userId: string) {
     // 先查缓存
     let user = await this.cacheService.getUserCache(userId);
-    
+
     if (!user) {
       // 缓存未命中，查数据库
       user = await this.userService.getUser(userId);
-      
+
       if (user) {
         // 设置缓存
         await this.cacheService.setUserCache(userId, user);
       }
     }
-    
+
     return user;
   }
 
@@ -118,12 +107,12 @@ export class UserManager {
     // 更新数据库
     const updatedUser = await this.userService.createUser({
       ...updateData,
-      id: userId
+      id: userId,
     });
-    
+
     // 更新缓存
     await this.cacheService.setUserCache(userId, updatedUser);
-    
+
     return updatedUser;
   }
-} 
+}

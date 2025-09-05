@@ -17,93 +17,10 @@ export interface SignalConfig {
 }
 
 /**
- * 日内信号配置
+ * 日内信号配置（基于实际数据库数据更新）
  */
 export const intradaySignals: SignalConfig[] = [
-  {
-    id: "intraday_swing_high_rebreakout",
-    name: "SWING_HIGH_REBREAKOUT",
-    displayName: "摆动高点重新突破",
-    description: "价格重新突破前期摆动高点的信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R2",
-    direction: "bullish",
-    color: "#10b981",
-    icon: "TrendingUp",
-  },
-  {
-    id: "intraday_swing_high_breakout",
-    name: "SWING_HIGH_BREAKOUT",
-    displayName: "摆动高点突破",
-    description: "价格首次突破摆动高点的信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R2",
-    direction: "bullish",
-    color: "#059669",
-    icon: "Activity",
-  },
-  {
-    id: "intraday_bullish_mss",
-    name: "INNERDAY_BULLISH_MSS",
-    displayName: "日内看涨结构转换",
-    description: "日内时间框架的看涨市场结构转换信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R3",
-    direction: "bullish",
-    color: "#3b82f6",
-    icon: "BarChart3",
-  },
-  {
-    id: "intraday_bullish_bos",
-    name: "INNERDAY_BULLISH_BOS",
-    displayName: "日内看涨结构突破",
-    description: "日内时间框架的看涨结构突破信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R2",
-    direction: "bullish",
-    color: "#8b5cf6",
-    icon: "TrendingUp",
-  },
-  {
-    id: "intraday_pl_reverted",
-    name: "PL_REVERTED",
-    displayName: "回调确认反转",
-    description: "价格回调后确认反转的信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R3",
-    direction: "bullish",
-    color: "#f59e0b",
-    icon: "Target",
-  },
-  {
-    id: "intraday_other",
-    name: "OTHER",
-    displayName: "其他信号",
-    description: "其他类型的日内交易信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R4",
-    direction: "neutral",
-    color: "#6b7280",
-    icon: "Square",
-  },
-  {
-    id: "intraday_bullish_ob",
-    name: "BULLISH_OB",
-    displayName: "看涨订单块",
-    description: "机构看涨订单块支撑位信号",
-    category: "intraday",
-    enabled: true,
-    riskLevel: "R2",
-    direction: "bullish",
-    color: "#ef4444",
-    icon: "Shield",
-  },
+  // 实时突破类信号
   {
     id: "intraday_realtime_breakout",
     name: "REALTIME_BREAKOUT",
@@ -116,36 +33,114 @@ export const intradaySignals: SignalConfig[] = [
     color: "#dc2626",
     icon: "Zap",
   },
-];
-
-/**
- * 日线信号配置
- */
-export const dailySignals: SignalConfig[] = [
+  // ICT 相关信号
   {
-    id: "daily_bullish_ssl",
-    name: "BULLISH_SSL",
-    displayName: "看涨SSL通道",
-    description: "SSL通道显示看涨趋势信号",
-    category: "daily",
+    id: "intraday_ict_breakout",
+    name: "ICT_BREAKOUT",
+    displayName: "ICT 突破",
+    description: "ICT 突破交易信号",
+    category: "intraday",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#7c3aed",
+    icon: "Activity",
+  },
+  // 订单块信号
+  {
+    id: "intraday_bullish_ob",
+    name: "BULLISH_OB",
+    displayName: "看涨订单块",
+    description: "机构看涨订单块支撑位信号",
+    category: "intraday",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#10b981",
+    icon: "Shield",
+  },
+  {
+    id: "intraday_bearish_ob",
+    name: "BEARISH_OB",
+    displayName: "看跌订单块",
+    description: "机构看跌订单块阻力位信号",
+    category: "intraday",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bearish",
+    color: "#ef4444",
+    icon: "Shield",
+  },
+  {
+    id: "intraday_order_block_pullback",
+    name: "ORDER_BLOCK_PULLBACK",
+    displayName: "订单块回调",
+    description: "订单块回调确认信号",
+    category: "intraday",
+    enabled: true,
+    riskLevel: "R3",
+    direction: "neutral",
+    color: "#f59e0b",
+    icon: "RefreshCw",
+  },
+  // 突破信号
+  {
+    id: "intraday_breakout",
+    name: "BREAKOUT",
+    displayName: "突破",
+    description: "价格突破关键位信号",
+    category: "intraday",
     enabled: true,
     riskLevel: "R2",
     direction: "bullish",
     color: "#059669",
     icon: "TrendingUp",
   },
+  // 缺口信号
   {
-    id: "daily_support_zone_breakdown",
-    name: "SupportZoneBreakdown",
-    displayName: "支撑区域跌破",
-    description: "价格跌破重要支撑区域的信号",
-    category: "daily",
+    id: "intraday_up_gap",
+    name: "UP_GAP",
+    displayName: "向上缺口",
+    description: "价格向上跳空缺口信号",
+    category: "intraday",
     enabled: true,
-    riskLevel: "R3",
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#22c55e",
+    icon: "ArrowUp",
+  },
+  // 吞没形态
+  {
+    id: "intraday_bullish_engulfing",
+    name: "BULLISH_ENGULFING",
+    displayName: "看涨吞没",
+    description: "看涨吞没K线形态信号",
+    category: "intraday",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#16a34a",
+    icon: "TrendingUp",
+  },
+  {
+    id: "intraday_bearish_engulfing",
+    name: "BEARISH_ENGULFING",
+    displayName: "看跌吞没",
+    description: "看跌吞没K线形态信号",
+    category: "intraday",
+    enabled: true,
+    riskLevel: "R2",
     direction: "bearish",
     color: "#dc2626",
     icon: "TrendingDown",
   },
+];
+
+/**
+ * 日线信号配置（基于实际数据库数据更新）
+ */
+export const dailySignals: SignalConfig[] = [
+  // FVG (Fair Value Gap) 信号
   {
     id: "daily_bullish_fvg",
     name: "BULLISH_FVG",
@@ -159,6 +154,56 @@ export const dailySignals: SignalConfig[] = [
     icon: "BarChart3",
   },
   {
+    id: "daily_bearish_fvg",
+    name: "BEARISH_FVG",
+    displayName: "看跌公允价值缺口",
+    description: "日线时间框架的看跌FVG信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bearish",
+    color: "#dc2626",
+    icon: "BarChart3",
+  },
+  // BOS (Break of Structure) 信号
+  {
+    id: "daily_bullish_bos",
+    name: "BULLISH_BOS",
+    displayName: "看涨结构突破",
+    description: "日线时间框架的看涨结构突破信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#16a34a",
+    icon: "TrendingUp",
+  },
+  {
+    id: "daily_bearish_bos",
+    name: "BEARISH_BOS",
+    displayName: "看跌结构突破",
+    description: "日线时间框架的看跌结构突破信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bearish",
+    color: "#dc2626",
+    icon: "TrendingDown",
+  },
+  // MSS (Market Structure Shift) 信号
+  {
+    id: "daily_bullish_mss",
+    name: "BULLISH_MSS",
+    displayName: "看涨结构转换",
+    description: "日线时间框架的看涨市场结构转换",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R3",
+    direction: "bullish",
+    color: "#059669",
+    icon: "Activity",
+  },
+  {
     id: "daily_bearish_mss",
     name: "BEARISH_MSS",
     displayName: "看跌结构转换",
@@ -170,54 +215,32 @@ export const dailySignals: SignalConfig[] = [
     color: "#7c3aed",
     icon: "Activity",
   },
+  // SSL 通道信号
   {
-    id: "daily_limit_up",
-    name: "LIMIT_UP",
-    displayName: "涨停信号",
-    description: "股票涨停板信号",
-    category: "daily",
-    enabled: true,
-    riskLevel: "R1",
-    direction: "bullish",
-    color: "#d97706",
-    icon: "ArrowUp",
-  },
-  {
-    id: "daily_resistance_breakout",
-    name: "ResistanceBreakout",
-    displayName: "阻力位突破",
-    description: "价格突破重要阻力位的信号",
+    id: "daily_bullish_ssl",
+    name: "BULLISH_SSL",
+    displayName: "看涨SSL通道",
+    description: "SSL通道显示看涨趋势信号",
     category: "daily",
     enabled: true,
     riskLevel: "R2",
     direction: "bullish",
+    color: "#059669",
+    icon: "TrendingUp",
+  },
+  {
+    id: "daily_bearish_ssl",
+    name: "BEARISH_SSL",
+    displayName: "看跌SSL通道",
+    description: "SSL通道显示看跌趋势信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bearish",
     color: "#dc2626",
-    icon: "Target",
+    icon: "TrendingDown",
   },
-  {
-    id: "daily_er",
-    name: "ER",
-    displayName: "看涨SSL扩展",
-    description: "SSL通道扩展看涨信号",
-    category: "daily",
-    enabled: true,
-    riskLevel: "R2",
-    direction: "bullish",
-    color: "#10b981",
-    icon: "Shield",
-  },
-  {
-    id: "daily_pl",
-    name: "PL",
-    displayName: "价格线信号",
-    description: "基于价格线的交易信号",
-    category: "daily",
-    enabled: true,
-    riskLevel: "R3",
-    direction: "bullish",
-    color: "#8b5cf6",
-    icon: "Minus",
-  },
+  // 订单块信号
   {
     id: "daily_bullish_ob",
     name: "BULLISH_OB",
@@ -227,20 +250,96 @@ export const dailySignals: SignalConfig[] = [
     enabled: true,
     riskLevel: "R2",
     direction: "bullish",
-    color: "#f59e0b",
-    icon: "Square",
+    color: "#10b981",
+    icon: "Shield",
   },
   {
-    id: "daily_ppl",
-    name: "PPL",
-    displayName: "前期价格线",
-    description: "基于前期价格线的交易信号",
+    id: "daily_bearish_ob",
+    name: "BEARISH_OB",
+    displayName: "看跌订单块",
+    description: "日线时间框架的看跌订单块信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bearish",
+    color: "#ef4444",
+    icon: "Shield",
+  },
+  // 吞没形态
+  {
+    id: "daily_bullish_engulfing",
+    name: "BULLISH_ENGULFING",
+    displayName: "看涨吞没",
+    description: "日线时间框架的看涨吞没形态",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#22c55e",
+    icon: "TrendingUp",
+  },
+  {
+    id: "daily_bearish_engulfing",
+    name: "BEARISH_ENGULFING",
+    displayName: "看跌吞没",
+    description: "日线时间框架的看跌吞没形态",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bearish",
+    color: "#dc2626",
+    icon: "TrendingDown",
+  },
+  // 支撑阻力突破
+  {
+    id: "daily_support_zone_breakdown",
+    name: "SUPPORT_ZONE_BREAKDOWN",
+    displayName: "支撑区域跌破",
+    description: "价格跌破重要支撑区域的信号",
     category: "daily",
     enabled: true,
     riskLevel: "R3",
+    direction: "bearish",
+    color: "#dc2626",
+    icon: "TrendingDown",
+  },
+  {
+    id: "daily_resistance_breakout",
+    name: "RESISTANCE_BREAKOUT",
+    displayName: "阻力位突破",
+    description: "价格突破重要阻力位的信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
     direction: "bullish",
-    color: "#6366f1",
-    icon: "LineChart",
+    color: "#16a34a",
+    icon: "TrendingUp",
+  },
+  // ICT 相关
+  {
+    id: "daily_ict_breakout",
+    name: "ICT_BREAKOUT",
+    displayName: "ICT 突破",
+    description: "日线时间框架的 ICT 突破信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R2",
+    direction: "bullish",
+    color: "#8b5cf6",
+    icon: "Activity",
+  },
+  // 订单块回调
+  {
+    id: "daily_order_block_pullback",
+    name: "ORDER_BLOCK_PULLBACK",
+    displayName: "订单块回调",
+    description: "日线时间框架的订单块回调信号",
+    category: "daily",
+    enabled: true,
+    riskLevel: "R3",
+    direction: "neutral",
+    color: "#f59e0b",
+    icon: "RefreshCw",
   },
 ];
 
@@ -306,25 +405,25 @@ export const signalTypeMapping = {
  */
 export const urlToDbMapping = {
   // 日内信号的URL映射
-  "swing_high_rebreakout": "SWING_HIGH_REBREAKOUT",
-  "swing_high_breakout": "SWING_HIGH_BREAKOUT", 
-  "bullish_mss": "INNERDAY_BULLISH_MSS",
-  "bullish_bos": "INNERDAY_BULLISH_BOS",
-  "pl_reverted": "PL_REVERTED",
-  "other": "OTHER",
-  "bullish_ob": "BULLISH_OB",
-  "realtime_breakout": "REALTIME_BREAKOUT",
+  swing_high_rebreakout: "SWING_HIGH_REBREAKOUT",
+  swing_high_breakout: "SWING_HIGH_BREAKOUT",
+  bullish_mss: "INNERDAY_BULLISH_MSS",
+  bullish_bos: "INNERDAY_BULLISH_BOS",
+  pl_reverted: "PL_REVERTED",
+  other: "OTHER",
+  bullish_ob: "BULLISH_OB",
+  realtime_breakout: "REALTIME_BREAKOUT",
 
   // 日线信号的URL映射
-  "bullish_ssl": "BULLISH_SSL",
-  "support_zone_breakdown": "SupportZoneBreakdown",
-  "bullish_fvg": "BULLISH_FVG", 
-  "bearish_mss": "BEARISH_MSS",
-  "limit_up": "LIMIT_UP",
-  "resistance_breakout": "ResistanceBreakout",
-  "er": "ER",
-  "pl": "PL",
-  "ppl": "PPL",
+  bullish_ssl: "BULLISH_SSL",
+  support_zone_breakdown: "SupportZoneBreakdown",
+  bullish_fvg: "BULLISH_FVG",
+  bearish_mss: "BEARISH_MSS",
+  limit_up: "LIMIT_UP",
+  resistance_breakout: "ResistanceBreakout",
+  er: "ER",
+  pl: "PL",
+  ppl: "PPL",
 };
 
 /**
@@ -341,36 +440,36 @@ export function getSignalConfigById(id: string): SignalConfig | undefined {
  */
 export function findSignalConfig(identifier: string, category?: "intraday" | "daily"): SignalConfig | undefined {
   const allSignals = getAllSignals();
-  
+
   // 1. 首先尝试完整ID匹配（如 "intraday_swing_high_rebreakout"）
   let signal = allSignals.find((s) => s.id === identifier);
   if (signal) return signal;
-  
+
   // 2. 使用URL到数据库字段名的映射（如 "swing_high_rebreakout" -> "SWING_HIGH_REBREAKOUT"）
   const dbFieldName = urlToDbMapping[identifier as keyof typeof urlToDbMapping];
   if (dbFieldName) {
     signal = allSignals.find((s) => s.name === dbFieldName);
     if (signal) return signal;
   }
-  
+
   // 3. 使用数据库字段名到配置ID的映射（如 "SWING_HIGH_REBREAKOUT" -> "intraday_swing_high_rebreakout"）
   const mappedId = signalTypeMapping[identifier as keyof typeof signalTypeMapping];
   if (mappedId) {
     signal = allSignals.find((s) => s.id === mappedId);
     if (signal) return signal;
   }
-  
+
   // 4. 尝试数据库字段名直接匹配
   signal = allSignals.find((s) => s.name === identifier);
   if (signal) return signal;
-  
+
   // 5. 如果指定了类别，尝试添加前缀匹配
   if (category) {
     const prefixedId = `${category}_${identifier}`;
     signal = allSignals.find((s) => s.id === prefixedId);
     if (signal) return signal;
   }
-  
+
   return undefined;
 }
 
@@ -444,27 +543,52 @@ export function getDirectionStats(): Record<string, number> {
 }
 
 /**
+ * 转换数据库方向值到配置方向值
+ */
+export function convertDbDirectionToConfig(dbDirection: "long" | "short"): "bullish" | "bearish" {
+  const mapping = {
+    long: "bullish" as const,
+    short: "bearish" as const,
+  };
+  return mapping[dbDirection];
+}
+
+/**
  * 获取方向显示名称
  */
-export function getDirectionLabel(direction: "bullish" | "bearish" | "neutral"): string {
+export function getDirectionLabel(direction: "bullish" | "bearish" | "neutral" | "long" | "short"): string {
+  // 如果是数据库格式，先转换
+  if (direction === "long") {
+    direction = "bullish";
+  } else if (direction === "short") {
+    direction = "bearish";
+  }
+  
   const labels = {
     bullish: "看涨",
     bearish: "看跌",
     neutral: "中性",
   };
-  return labels[direction];
+  return labels[direction as "bullish" | "bearish" | "neutral"];
 }
 
 /**
  * 获取方向颜色
  */
-export function getDirectionColor(direction: "bullish" | "bearish" | "neutral"): string {
+export function getDirectionColor(direction: "bullish" | "bearish" | "neutral" | "long" | "short"): string {
+  // 如果是数据库格式，先转换
+  if (direction === "long") {
+    direction = "bullish";
+  } else if (direction === "short") {
+    direction = "bearish";
+  }
+  
   const colors = {
     bullish: "text-green-600",
     bearish: "text-red-600",
     neutral: "text-gray-600",
   };
-  return colors[direction];
+  return colors[direction as "bullish" | "bearish" | "neutral"];
 }
 
 /**
@@ -473,7 +597,7 @@ export function getDirectionColor(direction: "bullish" | "bearish" | "neutral"):
 export function getRiskLevelLabel(riskLevel: "R1" | "R2" | "R3" | "R4"): string {
   const labels = {
     R1: "低风险",
-    R2: "中低风险", 
+    R2: "中低风险",
     R3: "中高风险",
     R4: "高风险",
   };

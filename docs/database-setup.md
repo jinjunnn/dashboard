@@ -48,51 +48,49 @@ UPSTASH_REDIS_REST_TOKEN=your-upstash-token
 ### 数据库操作
 
 ```typescript
-import { getDatabaseClient } from '@/lib/database/factory';
+import { getDatabaseClient } from "@/lib/database/factory";
 
 const db = getDatabaseClient();
 
 // 查询数据
-const users = await db.query('SELECT * FROM users WHERE active = $1', [true]);
+const users = await db.query("SELECT * FROM users WHERE active = $1", [true]);
 
 // 事务操作
 await db.transaction(async (tx) => {
-  await tx.query('INSERT INTO users (name, email) VALUES ($1, $2)', ['John', 'john@example.com']);
-  await tx.query('INSERT INTO profiles (user_id, bio) VALUES ($1, $2)', [userId, 'Bio']);
+  await tx.query("INSERT INTO users (name, email) VALUES ($1, $2)", ["John", "john@example.com"]);
+  await tx.query("INSERT INTO profiles (user_id, bio) VALUES ($1, $2)", [userId, "Bio"]);
 });
 ```
 
 ### 缓存操作
 
 ```typescript
-import { getCacheClient } from '@/lib/database/factory';
+import { getCacheClient } from "@/lib/database/factory";
 
 const cache = getCacheClient();
 
 // 基本操作
-await cache.set('key', 'value', 3600); // TTL 3600秒
-const value = await cache.get('key');
-await cache.del('key');
+await cache.set("key", "value", 3600); // TTL 3600秒
+const value = await cache.get("key");
+await cache.del("key");
 ```
 
 ### Supabase 特殊功能
 
 ```typescript
-import { getSupabaseClient } from '@/lib/database/factory';
+import { getSupabaseClient } from "@/lib/database/factory";
 
 // 仅在生产环境可用
 const supabase = getSupabaseClient();
 
 // 认证
 const { data, error } = await supabase.auth.signUp({
-  email: 'user@example.com',
-  password: 'password'
+  email: "user@example.com",
+  password: "password",
 });
 
 // 文件上传
-const { data, error } = await supabase.storage
-  .from('avatars')
-  .upload('user-avatar.png', file);
+const { data, error } = await supabase.storage.from("avatars").upload("user-avatar.png", file);
 ```
 
 ## Docker 管理命令
@@ -127,6 +125,7 @@ npm run docker:clean
 ### 常见问题
 
 1. **Docker 启动失败**
+
    ```bash
    # 检查端口占用
    lsof -i :5432
@@ -134,6 +133,7 @@ npm run docker:clean
    ```
 
 2. **环境变量未生效**
+
    - 检查 `.env.local` 文件是否存在
    - 重启开发服务器
 
@@ -144,9 +144,9 @@ npm run docker:clean
 ### 调试模式
 
 ```typescript
-import { getCurrentEnvironment } from '@/lib/database/config';
+import { getCurrentEnvironment } from "@/lib/database/config";
 
-console.log('当前环境:', getCurrentEnvironment());
+console.log("当前环境:", getCurrentEnvironment());
 ```
 
 ## 最佳实践
@@ -155,4 +155,4 @@ console.log('当前环境:', getCurrentEnvironment());
 2. **环境隔离**：开发和生产使用不同的数据库实例
 3. **错误处理**：妥善处理数据库连接失败的情况
 4. **缓存策略**：合理使用缓存提高性能
-5. **事务管理**：涉及多表操作时使用事务 
+5. **事务管理**：涉及多表操作时使用事务

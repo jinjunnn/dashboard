@@ -3,6 +3,7 @@
 ## 架构概述
 
 本项目现在使用统一的 Supabase 架构：
+
 - **开发环境**：本地 Supabase 实例
 - **生产环境**：云端 Supabase 实例
 
@@ -16,6 +17,7 @@
 ## 环境配置
 
 ### 开发环境（本地 Supabase）
+
 ```env
 NEXT_PUBLIC_SUPABASE_LOCAL_URL=http://localhost:54321
 SUPABASE_LOCAL_SERVICE_ROLE_KEY=your_local_service_role_key
@@ -23,6 +25,7 @@ NEXT_PUBLIC_SUPABASE_LOCAL_ANON_KEY=your_local_anon_key
 ```
 
 ### 生产环境（云端 Supabase）
+
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
@@ -35,10 +38,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_anon_key
 
 ```typescript
 export function getCurrentEnvironment(): Environment {
-  if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
-    return 'production';
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+    return "production";
   }
-  return 'development';
+  return "development";
 }
 ```
 
@@ -63,27 +66,27 @@ src/lib/database/
 ## 使用方式
 
 ### 在服务中使用
+
 ```typescript
-import { getDatabaseClient } from '@/lib/database/factory'
+import { getDatabaseClient } from "@/lib/database/factory";
 
 export async function getSignals() {
-  const db = getDatabaseClient()
-  const supabase = (db as SupabaseDatabaseAdapter).getClient()
-  
-  const { data, error } = await supabase
-    .from('signals')
-    .select('*')
-    
-  return data
+  const db = getDatabaseClient();
+  const supabase = (db as SupabaseDatabaseAdapter).getClient();
+
+  const { data, error } = await supabase.from("signals").select("*");
+
+  return data;
 }
 ```
 
 ### 在组件中使用
+
 ```typescript
-import { createSupabaseClient } from '@/lib/supabase/client'
+import { createSupabaseClient } from "@/lib/supabase/client";
 
 export function SignalsList() {
-  const supabase = createSupabaseClient()
+  const supabase = createSupabaseClient();
   // ... 使用 supabase 客户端
 }
 ```
@@ -103,4 +106,4 @@ export function SignalsList() {
 1. 确保本地 Supabase 实例正在运行（通常在端口 54321）
 2. 数据库表结构需要在本地和云端保持一致
 3. 环境变量需要正确配置
-4. Redis 缓存仍然使用原有的本地/云端分离策略 
+4. Redis 缓存仍然使用原有的本地/云端分离策略

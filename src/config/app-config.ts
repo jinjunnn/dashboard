@@ -5,7 +5,6 @@ export const APP_CONFIG = {
   version: packageJson.version,
   meta: {
     title: "量化交易系统",
-    description:
-      "量化交易系统",
+    description: "量化交易系统",
   },
 };

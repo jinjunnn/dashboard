@@ -1,0 +1,65 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="256" cy="256" r="256" fill="url(#gradient1)"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#f1f5f9;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 股票图表背景 -->
+  <rect x="96" y="128" width="320" height="256" rx="24" fill="url(#gradient2)" opacity="0.95"/>
+  
+  <!-- K线图标元素 -->
+  <!-- 第一根K线 (看涨) -->
+  <rect x="128" y="200" width="12" height="120" fill="#10b981" rx="2"/>
+  <line x1="134" y1="180" x2="134" y2="340" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- 第二根K线 (看跌) -->
+  <rect x="168" y="240" width="12" height="60" fill="#ef4444" rx="2"/>
+  <line x1="174" y1="220" x2="174" y2="320" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- 第三根K线 (看涨) -->
+  <rect x="208" y="180" width="12" height="140" fill="#10b981" rx="2"/>
+  <line x1="214" y1="160" x2="214" y2="340" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- 第四根K线 (看跌) -->
+  <rect x="248" y="260" width="12" height="40" fill="#ef4444" rx="2"/>
+  <line x1="254" y1="240" x2="254" y2="320" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- 第五根K线 (看涨) -->
+  <rect x="288" y="190" width="12" height="110" fill="#10b981" rx="2"/>
+  <line x1="294" y1="170" x2="294" y2="320" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- 趋势线 -->
+  <path d="M 128 300 Q 200 200 288 220 Q 350 240 384 200" 
+        stroke="#fbbf24" 
+        stroke-width="3" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="0.8"/>
+  
+  <!-- 信号指示器 -->
+  <circle cx="350" cy="200" r="12" fill="#fbbf24"/>
+  <circle cx="350" cy="200" r="8" fill="#ffffff"/>
+  <circle cx="350" cy="200" r="4" fill="#f59e0b"/>
+  
+  <!-- 顶部标题区域 -->
+  <rect x="110" y="140" width="292" height="32" rx="8" fill="rgba(255,255,255,0.3)"/>
+  
+  <!-- 文字元素 -->
+  <text x="256" y="160" text-anchor="middle" fill="#1e293b" font-family="Arial, sans-serif" font-size="16" font-weight="600">信号分析</text>
+  
+  <!-- 装饰性元素 -->
+  <circle cx="380" cy="160" r="3" fill="#10b981" opacity="0.6"/>
+  <circle cx="370" cy="370" r="3" fill="#ef4444" opacity="0.6"/>
+  <circle cx="130" cy="160" r="3" fill="#f59e0b" opacity="0.6"/>
+</svg>

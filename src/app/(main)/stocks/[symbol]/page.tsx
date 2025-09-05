@@ -41,9 +41,9 @@ async function getStockInfo(symbol: string): Promise<StockInfo | null> {
   try {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
-      .from('stock')
-      .select('symbol, name, market, meta_data, updated_at')
-      .eq('symbol', symbol)
+      .from("stock")
+      .select("symbol, name, market, meta_data, updated_at")
+      .eq("symbol", symbol)
       .single();
 
     if (error || !data) {
@@ -52,7 +52,7 @@ async function getStockInfo(symbol: string): Promise<StockInfo | null> {
 
     return data;
   } catch (error) {
-    console.error('获取股票信息失败:', error);
+    console.error("获取股票信息失败:", error);
     return null;
   }
 }
@@ -61,42 +61,44 @@ async function getStockSignals(symbol: string): Promise<StockSignal[]> {
   try {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
-      .from('signals')
-      .select('id, symbol, signal_type, category, direction, price, confidence, status, created_at, expires_at, meta_data')
-      .eq('symbol', symbol)
-      .order('created_at', { ascending: false })
+      .from("signals")
+      .select(
+        "id, symbol, signal_type, category, direction, price, confidence, status, created_at, expires_at, meta_data",
+      )
+      .eq("symbol", symbol)
+      .order("created_at", { ascending: false })
       .limit(20); // 限制查询最近20条数据
 
     if (error) {
-      console.error('获取股票信号失败:', error);
+      console.error("获取股票信号失败:", error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    console.error('获取股票信号失败:', error);
+    console.error("获取股票信号失败:", error);
     return [];
   }
 }
 
 // 转换函数：将StockSignal转换为Signal格式，为股票页面特制
 function convertToSignalFormat(stockSignals: StockSignal[], stockInfo?: StockInfo): Signal[] {
-  return stockSignals.map(signal => ({
+  return stockSignals.map((signal) => ({
     ...signal,
     direction: signal.direction, // direction已经是"long" | "short"，直接使用
     meta_data: signal.meta_data || {},
     stock: {
       name: stockInfo?.name || "未知股票",
       market: stockInfo?.market || "未知市场",
-      meta_data: stockInfo?.meta_data || {}
-    }
+      meta_data: stockInfo?.meta_data || {},
+    },
   }));
 }
 
 function StockInfoCard({ stock }: { stock: StockInfo }) {
   // 从meta_data中获取行业信息
   const industry = stock.meta_data?.industry || "未知行业";
-  
+
   return (
     <Card>
       <CardHeader>
@@ -109,21 +111,21 @@ function StockInfoCard({ stock }: { stock: StockInfo }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <div>
-            <div className="text-sm text-muted-foreground">股票代码</div>
+            <div className="text-muted-foreground text-sm">股票代码</div>
             <div className="font-medium">{stock.symbol}</div>
           </div>
           <div>
-            <div className="text-sm text-muted-foreground">行业</div>
+            <div className="text-muted-foreground text-sm">行业</div>
             <Badge variant="outline">{industry}</Badge>
           </div>
           <div>
-            <div className="text-sm text-muted-foreground">数据更新</div>
+            <div className="text-muted-foreground text-sm">数据更新</div>
             <div className="text-sm">{new Date(stock.updated_at).toLocaleDateString()}</div>
           </div>
           <div>
-            <div className="text-sm text-muted-foreground">状态</div>
+            <div className="text-muted-foreground text-sm">状态</div>
             <Badge variant="default">活跃</Badge>
           </div>
         </div>
@@ -134,49 +136,49 @@ function StockInfoCard({ stock }: { stock: StockInfo }) {
 
 function SignalStatsCard({ signals }: { signals: StockSignal[] }) {
   const totalSignals = signals.length;
-  const activeSignals = signals.filter(s => s.status === 'active').length;
-  const longSignals = signals.filter(s => s.direction === 'long').length;
-  const intradaySignals = signals.filter(s => s.category === 'intraday').length;
+  const activeSignals = signals.filter((s) => s.status === "active").length;
+  const longSignals = signals.filter((s) => s.direction === "long").length;
+  const intradaySignals = signals.filter((s) => s.category === "intraday").length;
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">信号数量</CardTitle>
+          <CardTitle className="text-muted-foreground text-sm font-medium">信号数量</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{totalSignals}</div>
-          <div className="text-xs text-muted-foreground">最近20条</div>
+          <div className="text-muted-foreground text-xs">最近20条</div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">活跃信号</CardTitle>
+          <CardTitle className="text-muted-foreground text-sm font-medium">活跃信号</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-green-600">{activeSignals}</div>
-          <div className="text-xs text-muted-foreground">当前有效</div>
+          <div className="text-muted-foreground text-xs">当前有效</div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">做多信号</CardTitle>
+          <CardTitle className="text-muted-foreground text-sm font-medium">做多信号</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-blue-600">{longSignals}</div>
-          <div className="text-xs text-muted-foreground">做多方向</div>
+          <div className="text-muted-foreground text-xs">做多方向</div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">日内信号</CardTitle>
+          <CardTitle className="text-muted-foreground text-sm font-medium">日内信号</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-orange-600">{intradaySignals}</div>
-          <div className="text-xs text-muted-foreground">短期交易</div>
+          <div className="text-muted-foreground text-xs">短期交易</div>
         </CardContent>
       </Card>
     </div>
@@ -186,18 +188,15 @@ function SignalStatsCard({ signals }: { signals: StockSignal[] }) {
 export default async function StockPage({ params }: StockPageProps) {
   const { symbol } = await params;
   const decodedSymbol = decodeURIComponent(symbol);
-  
-  const [stock, signals] = await Promise.all([
-    getStockInfo(decodedSymbol),
-    getStockSignals(decodedSymbol)
-  ]);
+
+  const [stock, signals] = await Promise.all([getStockInfo(decodedSymbol), getStockSignals(decodedSymbol)]);
 
   if (!stock) {
     notFound();
   }
 
-  const intradaySignals = signals.filter(s => s.category === 'intraday');
-  const dailySignals = signals.filter(s => s.category === 'daily');
+  const intradaySignals = signals.filter((s) => s.category === "intraday");
+  const dailySignals = signals.filter((s) => s.category === "daily");
 
   return (
     <div className="space-y-6">
@@ -240,15 +239,13 @@ export default async function StockPage({ params }: StockPageProps) {
                 <TrendingUp className="h-5 w-5" />
                 所有交易信号
               </CardTitle>
-              <CardDescription>
-                {decodedSymbol} 的最新20条交易信号
-              </CardDescription>
+              <CardDescription>{decodedSymbol} 的最新20条交易信号</CardDescription>
             </CardHeader>
             <CardContent>
               {signals.length > 0 ? (
                 <Suspense fallback={<div>加载中...</div>}>
-                  <SignalsTable 
-                    signals={convertToSignalFormat(signals, stock)} 
+                  <SignalsTable
+                    signals={convertToSignalFormat(signals, stock)}
                     title="所有交易信号"
                     category={undefined}
                     signalType={undefined}
@@ -256,9 +253,7 @@ export default async function StockPage({ params }: StockPageProps) {
                   />
                 </Suspense>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  暂无信号数据
-                </div>
+                <div className="text-muted-foreground py-8 text-center">暂无信号数据</div>
               )}
             </CardContent>
           </Card>
@@ -271,15 +266,13 @@ export default async function StockPage({ params }: StockPageProps) {
                 <TrendingUp className="h-5 w-5 text-blue-500" />
                 日内交易信号
               </CardTitle>
-              <CardDescription>
-                {decodedSymbol} 的短期交易信号，适用于日内交易策略
-              </CardDescription>
+              <CardDescription>{decodedSymbol} 的短期交易信号，适用于日内交易策略</CardDescription>
             </CardHeader>
             <CardContent>
               {intradaySignals.length > 0 ? (
                 <Suspense fallback={<div>加载中...</div>}>
-                  <SignalsTable 
-                    signals={convertToSignalFormat(intradaySignals, stock)} 
+                  <SignalsTable
+                    signals={convertToSignalFormat(intradaySignals, stock)}
                     title="日内交易信号"
                     category="intraday"
                     signalType={undefined}
@@ -287,9 +280,7 @@ export default async function StockPage({ params }: StockPageProps) {
                   />
                 </Suspense>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  暂无日内信号数据
-                </div>
+                <div className="text-muted-foreground py-8 text-center">暂无日内信号数据</div>
               )}
             </CardContent>
           </Card>
@@ -302,15 +293,13 @@ export default async function StockPage({ params }: StockPageProps) {
                 <TrendingUp className="h-5 w-5 text-green-500" />
                 日线交易信号
               </CardTitle>
-              <CardDescription>
-                {decodedSymbol} 的中长期交易信号，适用于波段和趋势交易
-              </CardDescription>
+              <CardDescription>{decodedSymbol} 的中长期交易信号，适用于波段和趋势交易</CardDescription>
             </CardHeader>
             <CardContent>
               {dailySignals.length > 0 ? (
                 <Suspense fallback={<div>加载中...</div>}>
-                  <SignalsTable 
-                    signals={convertToSignalFormat(dailySignals, stock)} 
+                  <SignalsTable
+                    signals={convertToSignalFormat(dailySignals, stock)}
                     title="日线交易信号"
                     category="daily"
                     signalType={undefined}
@@ -318,9 +307,7 @@ export default async function StockPage({ params }: StockPageProps) {
                   />
                 </Suspense>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  暂无日线信号数据
-                </div>
+                <div className="text-muted-foreground py-8 text-center">暂无日线信号数据</div>
               )}
             </CardContent>
           </Card>
@@ -328,4 +315,4 @@ export default async function StockPage({ params }: StockPageProps) {
       </Tabs>
     </div>
   );
-} 
+}

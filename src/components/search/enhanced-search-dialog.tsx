@@ -58,7 +58,7 @@ export function EnhancedSearchDialog() {
 
     setIsLoading(true);
     setHasSearched(true);
-    
+
     try {
       const results = await universalSearchClient(searchQuery);
       setSearchResults(results);
@@ -71,12 +71,15 @@ export function EnhancedSearchDialog() {
   }, []);
 
   // 处理回车键搜索
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      performSearch(query);
-    }
-  }, [query, performSearch]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        performSearch(query);
+      }
+    },
+    [query, performSearch],
+  );
 
   // 导航到股票页面
   const navigateToStock = (symbol: string) => {
@@ -111,39 +114,33 @@ export function EnhancedSearchDialog() {
           <span className="text-xs">⌘</span>J
         </kbd>
       </div>
-      
-      <CommandDialog 
-        open={open} 
-        onOpenChange={setOpen}
-        shouldFilter={false}
-      >
-        <CommandInput 
+
+      <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+        <CommandInput
           placeholder="输入股票代码/名称或信号ID，按回车搜索..."
           value={query}
           onValueChange={setQuery}
           onKeyDown={handleKeyDown}
         />
-        
+
         <CommandList>
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-8 gap-3">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <div className="text-sm text-muted-foreground">正在搜索...</div>
+            <div className="flex flex-col items-center justify-center gap-3 py-8">
+              <Loader2 className="text-primary h-6 w-6 animate-spin" />
+              <div className="text-muted-foreground text-sm">正在搜索...</div>
             </div>
           ) : !hasSearched ? (
-            <div className="flex flex-col items-center justify-center py-8 gap-2">
-              <Search className="h-8 w-8 text-muted-foreground/50" />
-              <div className="text-sm text-muted-foreground">输入关键词后按回车搜索</div>
-              <div className="text-xs text-muted-foreground/70">
-                支持中文名称、股票代码、信号ID等
-              </div>
+            <div className="flex flex-col items-center justify-center gap-2 py-8">
+              <Search className="text-muted-foreground/50 h-8 w-8" />
+              <div className="text-muted-foreground text-sm">输入关键词后按回车搜索</div>
+              <div className="text-muted-foreground/70 text-xs">支持中文名称、股票代码、信号ID等</div>
             </div>
           ) : !hasResults ? (
             <CommandEmpty>
-              <div className="flex flex-col items-center justify-center py-6 gap-2">
-                <Search className="h-6 w-6 text-muted-foreground/50" />
-                <div className="text-sm text-muted-foreground">未找到相关结果</div>
-                <div className="text-xs text-muted-foreground/70">请尝试其他关键词</div>
+              <div className="flex flex-col items-center justify-center gap-2 py-6">
+                <Search className="text-muted-foreground/50 h-6 w-6" />
+                <div className="text-muted-foreground text-sm">未找到相关结果</div>
+                <div className="text-muted-foreground/70 text-xs">请尝试其他关键词</div>
               </div>
             </CommandEmpty>
           ) : (
@@ -160,16 +157,14 @@ export function EnhancedSearchDialog() {
                         className="flex items-center gap-3 p-3"
                       >
                         <Building2 className="h-4 w-4 text-blue-500" />
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{stock.symbol}</span>
                             <Badge variant="outline" className="text-xs">
                               {stock.market || "未知市场"}
                             </Badge>
                           </div>
-                          <div className="text-sm text-muted-foreground truncate">
-                            {stock.name || "未知名称"}
-                          </div>
+                          <div className="text-muted-foreground truncate text-sm">{stock.name || "未知名称"}</div>
                         </div>
                       </CommandItem>
                     ))}
@@ -188,21 +183,26 @@ export function EnhancedSearchDialog() {
                       onSelect={() => navigateToSignal(signal.id, signal.signal_type, signal.category)}
                       className="flex items-center gap-3 p-3"
                     >
-                      <TrendingUp className={`h-4 w-4 ${
-                        signal.direction === 'bullish' ? 'text-green-500' : 
-                        signal.direction === 'bearish' ? 'text-red-500' : 'text-gray-500'
-                      }`} />
-                      <div className="flex-1 min-w-0">
+                      <TrendingUp
+                        className={`h-4 w-4 ${
+                          signal.direction === "long"
+                            ? "text-green-500"
+                            : signal.direction === "short"
+                              ? "text-red-500"
+                              : "text-gray-500"
+                        }`}
+                      />
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">信号 #{signal.id}</span>
-                          <Badge variant={signal.category === 'intraday' ? 'default' : 'secondary'} className="text-xs">
-                            {signal.category === 'intraday' ? '日内' : '日线'}
+                          <Badge variant={signal.category === "intraday" ? "default" : "secondary"} className="text-xs">
+                            {signal.category === "intraday" ? "日内" : "日线"}
                           </Badge>
-                          <Badge variant={signal.status === 'active' ? 'default' : 'outline'} className="text-xs">
-                            {signal.status === 'active' ? '活跃' : '已过期'}
+                          <Badge variant={signal.status === "active" ? "default" : "outline"} className="text-xs">
+                            {signal.status === "active" ? "活跃" : "已过期"}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-muted-foreground text-sm">
                           {signal.symbol} - {signal.signal_type} - 置信度: {signal.confidence}%
                         </div>
                       </div>
@@ -216,4 +216,4 @@ export function EnhancedSearchDialog() {
       </CommandDialog>
     </>
   );
-} 
+}

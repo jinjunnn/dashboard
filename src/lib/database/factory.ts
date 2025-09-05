@@ -1,8 +1,8 @@
-import { DatabaseClient, CacheClient } from './types';
-import { getCurrentEnvironment, getSupabaseConfig, getCacheConfig } from './config';
-import { SupabaseDatabaseAdapter } from './adapters/supabase-adapter';
-import { RedisCacheAdapter } from './adapters/redis-adapter';
-import { UpstashCacheAdapter } from './adapters/upstash-adapter';
+import { DatabaseClient, CacheClient } from "./types";
+import { getCurrentEnvironment, getSupabaseConfig, getCacheConfig } from "./config";
+import { SupabaseDatabaseAdapter } from "./adapters/supabase-adapter";
+import { RedisCacheAdapter } from "./adapters/redis-adapter";
+import { UpstashCacheAdapter } from "./adapters/upstash-adapter";
 
 let databaseInstance: DatabaseClient | null = null;
 let cacheInstance: CacheClient | null = null;
@@ -17,11 +17,11 @@ export function getDatabaseClient(): DatabaseClient {
 
     // 本地和云端都使用 Supabase，只是配置不同
     databaseInstance = new SupabaseDatabaseAdapter(config.url, config.key);
-    
-    if (env === 'production') {
-      console.log('生产环境：使用云端 Supabase 数据库');
+
+    if (env === "production") {
+      console.log("生产环境：使用云端 Supabase 数据库");
     } else {
-      console.log('开发环境：使用本地 Supabase 数据库');
+      console.log("开发环境：使用本地 Supabase 数据库");
     }
   }
 
@@ -36,14 +36,14 @@ export function getCacheClient(): CacheClient {
     const env = getCurrentEnvironment();
     const config = getCacheConfig();
 
-    if (env === 'production') {
+    if (env === "production") {
       // 生产环境使用 Upstash
       cacheInstance = new UpstashCacheAdapter(config);
-      console.log('生产环境：使用 Upstash Redis 缓存');
+      console.log("生产环境：使用 Upstash Redis 缓存");
     } else {
       // 开发环境使用本地 Redis
       cacheInstance = new RedisCacheAdapter(config);
-      console.log('开发环境：使用本地 Redis 缓存');
+      console.log("开发环境：使用本地 Redis 缓存");
     }
   }
 
@@ -58,7 +58,7 @@ export function getSupabaseClient() {
   if (adapter instanceof SupabaseDatabaseAdapter) {
     return adapter.getClient();
   }
-  throw new Error('数据库适配器不是 Supabase 类型');
+  throw new Error("数据库适配器不是 Supabase 类型");
 }
 
 /**
@@ -66,16 +66,16 @@ export function getSupabaseClient() {
  */
 export async function closeAllConnections() {
   const promises: Promise<void>[] = [];
-  
+
   if (databaseInstance) {
     promises.push(databaseInstance.close());
     databaseInstance = null;
   }
-  
+
   if (cacheInstance) {
     promises.push(cacheInstance.close());
     cacheInstance = null;
   }
-  
+
   await Promise.all(promises);
-} 
+}

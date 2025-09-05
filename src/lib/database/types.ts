@@ -15,7 +15,7 @@ export interface CacheClient {
 }
 
 // 环境类型
-export type Environment = 'development' | 'production';
+export type Environment = "development" | "production";
 
 // 数据库配置
 export interface DatabaseConfig {
@@ -35,4 +35,4 @@ export interface CacheConfig {
   password?: string;
   url?: string;
   ssl?: boolean;
-} 
+}

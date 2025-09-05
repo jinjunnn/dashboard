@@ -1,4 +1,4 @@
-import { CacheClient, CacheConfig } from '../types';
+import { CacheClient, CacheConfig } from "../types";
 
 // 注意：需要安装 redis 包
 // npm install redis
@@ -7,9 +7,9 @@ export class RedisCacheAdapter implements CacheClient {
   private client: any; // RedisClientType
 
   constructor(config: CacheConfig) {
-    if (typeof window === 'undefined') {
-      const { createClient } = require('redis');
-      
+    if (typeof window === "undefined") {
+      const { createClient } = require("redis");
+
       this.client = createClient({
         socket: {
           host: config.host,
@@ -17,9 +17,9 @@ export class RedisCacheAdapter implements CacheClient {
         },
         password: config.password,
       });
-      
-      this.client.on('error', (err: Error) => {
-        console.error('Redis Client Error:', err);
+
+      this.client.on("error", (err: Error) => {
+        console.error("Redis Client Error:", err);
       });
     }
   }
@@ -60,4 +60,4 @@ export class RedisCacheAdapter implements CacheClient {
       await this.client.quit();
     }
   }
-} 
+}

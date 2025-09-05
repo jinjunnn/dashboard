@@ -1,11 +1,10 @@
----
-description: 
-globs: 
-alwaysApply: true
----
 # 规则文档导航
 
 ## 📚 完整规则文档列表
+
+### ⚡ 快速开始指南
+- **[前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc)** - 前端特有的开发流程、测试规范、构建部署
+- **[文档生成指南](mdc:.cursor/rules/docs_generation_guide.mdc)** - 自动生成.md文档到docs目录的完整规范
 
 ### 🏗️ 核心规范
 - **[项目结构规范](mdc:.cursor/rules/project_structure.mdc)** - 目录组织、文件命名、扩展规则
@@ -13,26 +12,72 @@ alwaysApply: true
 - **[前端UI规范](mdc:.cursor/rules/frontend_ui.mdc)** - 设计系统、组件使用、响应式设计
 - **[后端API规范](mdc:.cursor/rules/backend_api.mdc)** - Supabase集成、数据访问、权限控制
 
-### 🗄️ 数据规范
+### 🗄️ 数据与配置规范
 - **[数据库Schema](mdc:.cursor/rules/database_schema.mdc)** - 数据库表结构定义
 - **[API密钥配置](mdc:.cursor/rules/apikeys.mdc)** - 环境变量配置说明
+- **[后端接口文档](mdc:.cursor/rules/backend_interfaces.mdc)** - 后端接口规范和示例
+- **[搜索系统规范](mdc:.cursor/rules/search-system.mdc)** - 搜索功能实现规范
+- **[环境配置规范](mdc:.cursor/rules/environment-setup.mdc)** - 开发环境配置指南
 
-### 📖 使用指南
+### 🧠 智能助手管理
+- **[记忆管理规则](mdc:.cursor/rules/memory_management.mdc)** - AI记忆生成、更新、删除的完整规范和触发条件
 
-#### 🚀 快速开始
-1. **新手开发者** - 请先阅读 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc)
-2. **页面开发** - 参考 [项目结构规范](mdc:.cursor/rules/project_structure.mdc) 和 [前端UI规范](mdc:.cursor/rules/frontend_ui.mdc)
-3. **数据集成** - 查看 [后端API规范](mdc:.cursor/rules/backend_api.mdc) 和 [数据库Schema](mdc:.cursor/rules/database_schema.mdc)
+## 📖 使用指南
 
-#### 🔍 问题排查
-- **构建错误** → 检查 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的代码质量检查
-- **UI问题** → 参考 [前端UI规范](mdc:.cursor/rules/frontend_ui.mdc) 中的组件使用规范
-- **数据问题** → 查看 [后端API规范](mdc:.cursor/rules/backend_api.mdc) 中的错误处理
+### 🚀 新手开发者
+1. **首次开发** → 阅读 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 快速上手
+2. **了解项目结构** → 查看 [项目结构规范](mdc:.cursor/rules/project_structure.mdc)
+3. **开发流程** → 遵循 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc)
 
-#### 💡 最佳实践
-- **每次开发前** → 阅读 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的任务准备阶段
-- **每次提交前** → 执行 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的强制检查清单
-- **组件开发** → 遵循 [前端UI规范](mdc:.cursor/rules/frontend_ui.mdc) 中的组件使用原则
+### 🎨 前端页面开发
+1. **UI组件使用** → 参考 [前端UI规范](mdc:.cursor/rules/frontend_ui.mdc)
+2. **项目结构** → 查看 [项目结构规范](mdc:.cursor/rules/project_structure.mdc) 了解目录组织
+3. **开发测试** → 使用 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 中的测试流程
+
+### 🔌 数据集成开发
+1. **API集成** → 查看 [后端API规范](mdc:.cursor/rules/backend_api.mdc)
+2. **数据库操作** → 参考 [数据库Schema](mdc:.cursor/rules/database_schema.mdc)
+3. **接口使用** → 查看 [后端接口文档](mdc:.cursor/rules/backend_interfaces.mdc)
+
+### 📝 文档编写
+1. **文档生成** → 使用 [文档生成指南](mdc:.cursor/rules/docs_generation_guide.mdc)
+2. **自动化流程** → 遵循文档生成的标准模板和位置规范
+
+## 🔍 问题排查指南
+
+### 构建和编译错误
+- **TypeScript错误** → 查看 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 中的错误处理章节
+- **构建失败** → 检查 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的代码质量检查
+
+### UI和样式问题
+- **组件显示异常** → 参考 [前端UI规范](mdc:.cursor/rules/frontend_ui.mdc) 中的组件使用规范
+- **响应式问题** → 查看 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 中的移动端开发规范
+
+### 数据和API问题
+- **数据加载失败** → 查看 [后端API规范](mdc:.cursor/rules/backend_api.mdc) 中的错误处理
+- **数据库连接问题** → 参考 [环境配置规范](mdc:.cursor/rules/environment-setup.mdc)
+
+### 环境和配置问题
+- **开发环境搭建** → 查看 [环境配置规范](mdc:.cursor/rules/environment-setup.mdc)
+- **环境变量配置** → 参考 [API密钥配置](mdc:.cursor/rules/apikeys.mdc)
+
+## 💡 最佳实践
+
+### 🔄 每次开发前
+1. **快速准备** → 执行 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 中的开发前准备
+2. **任务规划** → 阅读 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的任务准备阶段
+
+### ✅ 每次提交前
+1. **强制检查** → 执行 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 中的完成后检查清单
+2. **代码质量** → 运行 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的质量检查工具
+
+### 📚 组件和功能开发
+1. **UI一致性** → 遵循 [前端UI规范](mdc:.cursor/rules/frontend_ui.mdc) 中的组件使用原则
+2. **性能优化** → 参考 [前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc) 中的性能监控章节
+
+### 📖 文档维护
+1. **自动生成** → 使用 [文档生成指南](mdc:.cursor/rules/docs_generation_guide.mdc) 规范生成文档
+2. **版本管理** → 遵循文档更新和版本控制规范
 
 ## 🔧 规则文档维护
 
@@ -49,6 +94,13 @@ alwaysApply: true
 ---
 
 ## 🚨 重要提醒
+
+**所有开发者都应该熟悉这些规则文档，特别是：**
+- **[前端开发指南](mdc:.cursor/rules/frontend_development_guide.mdc)** 中的强制检查清单
+- **[文档生成指南](mdc:.cursor/rules/docs_generation_guide.mdc)** 中的自动化文档生成规范
+
+**这些规则不是建议，而是保证项目质量的必须遵循的标准。**
+
 
 **所有开发者都应该熟悉这些规则文档，特别是 [开发工作流程](mdc:.cursor/rules/development_workflow.mdc) 中的强制检查清单。**
 

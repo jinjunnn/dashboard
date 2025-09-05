@@ -1,4 +1,4 @@
-import { CacheClient, CacheConfig } from '../types';
+import { CacheClient, CacheConfig } from "../types";
 
 // 注意：需要安装 @upstash/redis 包
 // npm install @upstash/redis
@@ -7,9 +7,9 @@ export class UpstashCacheAdapter implements CacheClient {
   private client: any; // Redis from @upstash/redis
 
   constructor(config: CacheConfig) {
-    if (typeof window === 'undefined') {
-      const { Redis } = require('@upstash/redis');
-      
+    if (typeof window === "undefined") {
+      const { Redis } = require("@upstash/redis");
+
       this.client = new Redis({
         url: config.url!,
         token: config.password!,
@@ -41,4 +41,4 @@ export class UpstashCacheAdapter implements CacheClient {
   async close(): Promise<void> {
     // Upstash Redis 客户端不需要手动关闭
   }
-} 
+}
